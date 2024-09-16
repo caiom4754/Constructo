@@ -72,7 +72,7 @@ function pararDesenho() {
 
 // função para calcular a área da parede
 function calcularAreaParede() {
-    const tamanhoQuadrado = 40; 
+    const tamanhoQuadrado = 40;
     let area = 0;
     for (let i = 0; i < stack.length; i++) {
         const { startX, startY, endX, endY } = stack[i];
@@ -174,13 +174,11 @@ function calcularMateriais(alturaParede, numeroBlocos) {
 
 // função para exibir o número de blocos e materiais
 function exibirResultados(numeroBlocos, materiais) {
-    const resultadoElement = document.getElementById('resultadosBlocos');
-    resultadoElement.textContent = `Serão necessários ${numeroBlocos} blocos para construir a parede.`;
-
     const materiaisElement = document.getElementById('resultadosMateriais');
     materiaisElement.innerHTML = `
         Materiais necessários:
         <ul>
+            <li>Blocos: ${numeroBlocos} </li>
             <li>Cimento: ${materiais.cimento} sacos (50kg)</li>
             <li>Areia: ${materiais.areia} m³</li>
             <li>Cal: ${materiais.cal} m³</li>
@@ -212,8 +210,58 @@ botaoCalcular.addEventListener('click', function () {
     exibirResultados(numeroBlocos, materiais);
 });
 
-// Adicionar eventos de mouse para desenhar
+// adicionar eventos de mouse para desenhar
 canvas.addEventListener('mousedown', comecarDesenho);
 canvas.addEventListener('mousemove', desenhar);
 canvas.addEventListener('mouseup', pararDesenho);
 canvas.addEventListener('mouseout', pararDesenho);
+
+// Função para salvar o projeto em um arquivo JSON
+function baixarProjeto() {
+    const alturaParede = document.getElementById('alturaParede').value;
+    const tipoBloco = document.getElementById('tipoBloco').value;
+
+    const projeto = {
+        alturaParede: alturaParede,
+        tipoBloco: tipoBloco,
+        stack: stack, // Salva as coordenadas do desenho
+    };
+
+    const blob = new Blob([JSON.stringify(projeto)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'projeto.json';
+    link.click();
+}
+
+// Função para carregar o projeto de um arquivo JSON
+function carregarProjetoDoArquivo(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        const projeto = JSON.parse(e.target.result);
+
+        // Atualiza os campos de altura e tipo de bloco
+        document.getElementById('alturaParede').value = projeto.alturaParede;
+        document.getElementById('tipoBloco').value = projeto.tipoBloco;
+
+        // Recarrega as coordenadas do desenho
+        stack = projeto.stack;
+        redesenhar(); // Redesenha o canvas com as linhas salvas
+
+        alert('Projeto carregado com sucesso!');
+    };
+
+    reader.readAsText(file);
+}
+
+// Função para abrir o seletor de arquivo JSON
+function abrirSeletorArquivo() {
+    document.getElementById('carregarArquivoInput').click();
+}
+
+// Adicionar eventos aos botões
+document.getElementById('baixarProjetoButton').addEventListener('click', baixarProjeto);
+document.getElementById('carregarArquivoInput').addEventListener('change', carregarProjetoDoArquivo);
+document.getElementById('carregarArquivoButton').addEventListener('click', abrirSeletorArquivo);
