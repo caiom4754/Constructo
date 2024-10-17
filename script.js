@@ -6,10 +6,10 @@ let startY = 0;
 let endX = 0;
 let endY = 0;
 let stack = [];
+const tamanhoPadrao = 40;
 
 // função para desenhar o padrão quadriculado
 function desenharPadrao() {
-    const tamanhoPadrao = 40; // tamanho de cada quadrado em pixels
     const linhas = Math.ceil(canvas.height / tamanhoPadrao);
     const colunas = Math.ceil(canvas.width / tamanhoPadrao);
     context.fillStyle = '#ccc'; // cor do padrão em cinza
@@ -25,18 +25,22 @@ function desenharPadrao() {
 // desenhar o padrão quadriculado logo que iniciar a pagina
 desenharPadrao();
 
+function snapGrid(coord) {
+    return Math.round(coord / (tamanhoPadrao / 2)) * (tamanhoPadrao / 2);
+};
+
 // função para começar o desenho
 function comecarDesenho(e) {
     isDrawing = true;
-    startX = e.offsetX;
-    startY = e.offsetY;
+    startX = snapGrid(e.offsetX);
+    startY = snapGrid(e.offsetY);
 }
 
 // função para desenhar durante o arrasto do mouse
 function desenhar(e) {
     if (!isDrawing) return;
-    endX = e.offsetX;
-    endY = e.offsetY;
+    endX = snapGrid(e.offsetX);
+    endY = snapGrid(e.offsetY);
     redesenhar();
 }
 
@@ -49,6 +53,8 @@ function redesenhar() {
         context.beginPath();
         context.moveTo(startX, startY);
         context.lineTo(endX, endY);
+        context.strokeStyle = 'blue'; // cor da linha do desenho
+        context.lineWidth = 3;
         context.stroke();
     }
     if (isDrawing) {
@@ -56,23 +62,87 @@ function redesenhar() {
         context.moveTo(startX, startY);
         context.lineTo(endX, endY);
         context.strokeStyle = 'blue'; // cor da linha do desenho
-        context.lineWidth = 5;
+        context.lineWidth = 3;
         context.stroke();
     }
+}
+
+// função para dividir uma linha em segmentos com base no grid
+function dividirLinhaEmSegmentos(startX, startY, endX, endY) {
+    const segmentos = [];
+
+    const deltaX = endX - startX;
+    const deltaY = endY - startY;
+
+    const steps = Math.max(Math.abs(deltaX), Math.abs(deltaY)) / (tamanhoPadrao / 2);  // dividindo conforme o grid
+
+    for (let i = 0; i <= steps; i++) {
+        const x = startX + (deltaX / steps) * i;
+        const y = startY + (deltaY / steps) * i;
+        segmentos.push({ x, y });
+    }
+
+    return segmentos;
+}
+
+// função para verificar sobreposição de segmentos
+function verificarSobreposicao(startX, startY, endX, endY) {
+    const novaLinhaSegmentos = dividirLinhaEmSegmentos(startX, startY, endX, endY);
+
+    for (let i = 0; i < stack.length; i++) {
+        const { startX: sX, startY: sY, endX: eX, endY: eY } = stack[i];
+        const linhaExistenteSegmentos = dividirLinhaEmSegmentos(sX, sY, eX, eY);
+
+        let intersecoes = 0;  // para contar quantos segmentos tocam
+
+        // comparando cada segmento
+        for (let novoSegmento of novaLinhaSegmentos) {
+            for (let segmentoExistente of linhaExistenteSegmentos) {
+                if (novoSegmento.x === segmentoExistente.x && novoSegmento.y === segmentoExistente.y) {
+                    intersecoes++;
+                }
+            }
+        }
+
+        // se todos os segmentos tocarem, é sobreposição. Permite conexão em apenas um ponto
+        if (intersecoes > 1) {
+            return true;  // tem sobreposição total ou parcial
+        }
+    }
+
+    return false;  // não tme sobreposição relevante
 }
 
 // tem que fazer até função pra parar de desenhar 
 function pararDesenho() {
     if (!isDrawing) return;
     isDrawing = false;
-    if (startX !== endX || startY !== endY) {
-        stack.push({ startX, startY, endX, endY });
+
+    // verifica se a linha desenhada é válida
+    if (startX === endX && startY === endY) {
+        return; // Linha sem comprimento, não salva
     }
+
+    // cahama a função para verificar sobreposiçâo
+    const sobreposicao = verificarSobreposicao(startX, startY, endX, endY);
+
+    if (sobreposicao) {
+        alert("linhas sobrepostas");
+
+        // limpa a linha atual e redesenha todas as otras
+        redesenhar();  // redeesenha o estado atual do canvas sem a linha inválida
+
+        return;  // não adiciona a linha sobreposta ao stack
+    }
+
+    // adiciona a linha ao stack se não houver sobreposição
+    stack.push({ startX, startY, endX, endY });
+    redesenhar(); // redesenha as linhas no canvas
 }
 
 // função para calcular a área da parede
 function calcularComprimentoParede() {
-    const tamanhoQuadrado = 40;
+    const tamanhoQuadrado = tamanhoPadrao;
     let linear = 0;
     for (let i = 0; i < stack.length; i++) {
         const { startX, startY, endX, endY } = stack[i];
@@ -121,7 +191,7 @@ function calcularMateriais(alturaParede) {
     const areaParede = calcularComprimentoParede() * alturaParede;
 
     if (!numBlocos) {
-        return { cimento: 0 }; // Retorna 0 caso o cálculo de blocos falhe
+        return { cimento: 0, areia: 0, agua: 0 }; // Retorna 0 caso o cálculo de blocos falhe
     }
 
     let blocosPorSaco;
@@ -146,7 +216,7 @@ function calcularMateriais(alturaParede) {
     const areiaPorM3 = areaParede * 0.020;
 
     //calcular a quantidade de awa
-    const aguaLitros = (sacosCimento * 50)*0.5;
+    const aguaLitros = (sacosCimento * 50) * 0.5;
 
     //heheboy tudp funfando
 
@@ -156,8 +226,6 @@ function calcularMateriais(alturaParede) {
         agua: aguaLitros.toFixed(1)
     };
 }
-
-
 
 // função para exibir o número de blocos e materiais
 function exibirResultados(numeroBlocos, materiais) {
@@ -180,6 +248,7 @@ botaoDesfazer.addEventListener('click', function () {
     redesenhar();
 });
 
+//fazendo algumas validaçoes antes de calcular
 const botaoCalcular = document.getElementById('calcularButton');
 botaoCalcular.addEventListener('click', function () {
     if (stack.length < 1) {
@@ -196,7 +265,7 @@ botaoCalcular.addEventListener('click', function () {
     exibirResultados(numeroBlocos, materiais);
 });
 
-// adicionar eventos do mouse para desenhar
+// adicionar eventos de mouse para desenhar
 canvas.addEventListener('mousedown', comecarDesenho);
 canvas.addEventListener('mousemove', desenhar);
 canvas.addEventListener('mouseup', pararDesenho);
@@ -217,7 +286,7 @@ function limparNomeProjeto(nome) {
     return nomeLimpo.toLowerCase();
 }
 
-// função para salvar o projeto em um arquivo JSON
+// Função para salvar o projeto em um arquivo JSON
 function baixarProjeto() {
     const alturaParede = document.getElementById('alturaParede').value;
     const tipoBloco = document.getElementById('tipoBloco').value;
@@ -267,3 +336,5 @@ function abrirSeletorArquivo() {
 document.getElementById('baixarProjetoButton').addEventListener('click', baixarProjeto);
 document.getElementById('carregarArquivoInput').addEventListener('change', carregarProjetoDoArquivo);
 document.getElementById('carregarArquivoButton').addEventListener('click', abrirSeletorArquivo);
+
+//postgre**
