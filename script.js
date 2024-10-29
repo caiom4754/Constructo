@@ -140,6 +140,43 @@ function pararDesenho() {
     redesenhar(); // redesenha as linhas no canvas
 }
 
+function DimensaoPortasJanelas() {
+    const container = document.getElementById("dimensions-container");
+
+    const fieldGroup = document.createElement("div");
+    fieldGroup.classList.add("field-group");
+
+    const larguraInput = document.createElement("input");
+    larguraInput.type = "number";
+    larguraInput.placeholder = "Largura (m)";
+    larguraInput.name = "largura[]";
+    larguraInput.required = true;
+
+    const alturaInput = document.createElement("input");
+    alturaInput.type = "number";
+    alturaInput.placeholder = "Altura (m)";
+    alturaInput.name = "altura[]";
+    alturaInput.required = true;
+
+    const quantidadeInput = document.createElement("input");
+    quantidadeInput.type = "number";
+    quantidadeInput.placeholder = "Quantidade";
+    quantidadeInput.name = "quantidade[]";
+    quantidadeInput.required = true;
+
+    const removeButton = document.createElement("button");
+    removeButton.innerText = "Remover";
+    removeButton.type = "button";
+    removeButton.onclick = () => container.removeChild(fieldGroup);
+
+    fieldGroup.appendChild(larguraInput);
+    fieldGroup.appendChild(alturaInput);
+    fieldGroup.appendChild(quantidadeInput);
+    fieldGroup.appendChild(removeButton);
+
+    container.appendChild(fieldGroup);
+}
+
 // função para calcular a área da parede
 function calcularComprimentoParede() {
     const tamanhoQuadrado = tamanhoPadrao;
@@ -155,6 +192,27 @@ function calcularComprimentoParede() {
     return linear;
 }
 
+//função para calcular a área das portas e janelas e subtrair
+function calcularAreaAberturas() {
+    const larguraInputs = document.getElementsByName("largura[]");
+    const alturaInputs = document.getElementsByName("altura[]");
+    const quantidadeInputs = document.getElementsByName("quantidade[]");
+
+    let areaTotalAberturas = 0;
+
+    for (let i = 0; i < larguraInputs.length; i++) {
+        const largura = parseFloat(larguraInputs[i].value);
+        const altura = parseFloat(alturaInputs[i].value);
+        const quantidade = parseInt(quantidadeInputs[i].value);
+
+        if (!isNaN(largura) && !isNaN(altura) && !isNaN(quantidade)) {
+            areaTotalAberturas += largura * altura * quantidade;
+        }
+    }
+
+    return areaTotalAberturas;
+}
+
 // Função para calcular o número de blocos
 function calcularNumeroBlocos(alturaParede) {
     const tipoBloco = document.getElementById('tipoBloco').value;
@@ -167,19 +225,29 @@ function calcularNumeroBlocos(alturaParede) {
         case 'ceramico19x19x09':
             dimensoesBloco = { comprimento: 0.19, altura: 0.19, largura: 0.09 };
             break;
+        case 'ecologico25x12.5x6.25':
+            dimensoesBloco = { comprimento: 0.25, altura: 0.125, largura : 0.0625 };
+            break;
         default:
             alert("Tipo de bloco não reconhecido!");
             return;
     }
 
-    const areaParede = calcularComprimentoParede() * alturaParede;
+    const areaTotalAberturas = calcularAreaAberturas();
+    const areaParede = (calcularComprimentoParede() * alturaParede) - areaTotalAberturas;
     const areaBloco = dimensoesBloco.comprimento * dimensoesBloco.altura;
     const numeroBlocos = Math.ceil(areaParede / areaBloco);
+
+    if(areaParede <= 0){
+        alert("Área da parede não pode ser menor ou igual a zero");
+        return { cimento: 0, areia: 0, agua: 0 };
+    }
+
     return numeroBlocos;
 }
 
 // Função para calcular materiais
-function calcularMateriais(alturaParede) {
+function calcularMateriais(alturaParede, areaParede) {
 
     // levando em consideração que as medidas serão 1:4:.5 (cimento:areia:agua)
 
@@ -187,8 +255,6 @@ function calcularMateriais(alturaParede) {
 
     // Chamando a função calcularNumeroBlocos e armazenando o resultado
     const numBlocos = calcularNumeroBlocos(alturaParede);
-    // chamando a função para pegar a área da parede
-    const areaParede = calcularComprimentoParede() * alturaParede;
 
     if (!numBlocos) {
         return { cimento: 0, areia: 0, agua: 0 }; // Retorna 0 caso o cálculo de blocos falhe
@@ -202,8 +268,12 @@ function calcularMateriais(alturaParede) {
             areiaPorBloco = 0.020;
             break;
         case 'ceramico19x19x09':
-            blocosPorSaco = 200; // 1 saco de cimento para 200 blocos cerâmicos
+            blocosPorSaco = 200; 
             areiaPorBloco = 0.015;
+            break;
+        case 'ecologico25x12.5x6.25':
+            blocosPorSaco = 250; 
+            areiaPorBloco = 0.012;
             break;
         default:
             return { cimento: 0, areia: 0 };
