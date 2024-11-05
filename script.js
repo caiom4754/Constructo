@@ -10,12 +10,17 @@ const tamanhoPadrao = 40;
 
 // função para desenhar o padrão quadriculado
 function desenharPadrao() {
+    // define a quantidade de linhas e colunas para o padrão com base no tamanho do canvas e do tamanho do padrão
     const linhas = Math.ceil(canvas.height / tamanhoPadrao);
     const colunas = Math.ceil(canvas.width / tamanhoPadrao);
-    context.fillStyle = '#ccc'; // cor do padrão em cinza
+    // define a cor dos quadrados
+    context.fillStyle = '#ccc';
+    // percorre cada linha e coluna para desenhar o padrão quadriculado
     for (let linha = 0; linha < linhas; linha++) {
         for (let coluna = 0; coluna < colunas; coluna++) {
+            // verifica se a soma dos índices da linha e coluna é par para alternar o preenchimento, criando o efeito quadriculado
             if ((linha + coluna) % 2 === 0) {
+                // desenha um retângulo com a cor definida em posições alternadas
                 context.fillRect(coluna * tamanhoPadrao, linha * tamanhoPadrao, tamanhoPadrao, tamanhoPadrao);
             }
         }
@@ -26,18 +31,27 @@ function desenharPadrao() {
 desenharPadrao();
 
 function snapGrid(coord) {
+    // arredonda a coordenada para o ponto mais próximo no grid, usando a metade do tamanho do padrão quadriculado
     return Math.round(coord / (tamanhoPadrao / 2)) * (tamanhoPadrao / 2);
 };
 
 // função para começar o desenho
 function comecarDesenho(e) {
+    // indica que o desenho foi iniciado ao pressionar o mouse
     isDrawing = true;
+    // ajusta a coordenada x inicial para o grid, arredondando para se alinhar ao padrão
     startX = snapGrid(e.offsetX);
+    // ajusta a coordenada y inicial para o grid, arredondando para se alinhar ao padrão
     startY = snapGrid(e.offsetY);
 }
 
 // função para desenhar durante o arrasto do mouse
 function desenhar(e) {
+    /* verifica se o desenho está ativo, caso não esteja, interrompe a função,
+    caso esteja ativo, ajusta as coordenadas finais (endX e endY) usando o snapgrid 
+    para alinhar as coordenadas do ponto atual do mouse ao grid,
+    depois, chama a função redesenhar para atualizar o canvas e refletir o traço ou
+    ajuste realizado */
     if (!isDrawing) return;
     endX = snapGrid(e.offsetX);
     endY = snapGrid(e.offsetY);
@@ -46,6 +60,18 @@ function desenhar(e) {
 
 // função para desenhar a linhas retas
 function redesenhar() {
+    /* aqui a gente limpa o canvas para não ter linhas por cima de outras
+    depois, chamamos a função desenharPadrao pra colocar padrão de fundo 
+
+    em seguida, vamos dar uma olhada em cada linha que já desenhamos e guardamos no stack
+    pra cada linha, a gente desenha do ponto inicial (startX, startY) até o ponto final (endX, endY),
+    tudo azul e com uma largura de 3 pixels 
+
+    se ainda estamos desenhando, também desenhamos a linha que estamos criando no momento
+    com as mesmas cores e estilos, assim da pra ver o que estamos fazendo até terminar de desenhar
+    e guardar essa linha no stack 
+    
+    sem essa função, ocorria de a cada nova linha íamos desenhar, a anterior sumia*/
     context.clearRect(0, 0, canvas.width, canvas.height);
     desenharPadrao();
     for (let i = 0; i < stack.length; i++) {
@@ -69,12 +95,17 @@ function redesenhar() {
 
 // função para dividir uma linha em segmentos com base no grid
 function dividirLinhaEmSegmentos(startX, startY, endX, endY) {
+    /* essa função pega as coordenadas de início e fim de uma linha 
+    e divide em segmentos menores. primeiro, ela calcula a diferença entre as coordenadas 
+    de início e fim, determina quantos segmentos criar com base no tamanho do grid, 
+    e depois, gera um array de pontos que representam as coordenadas de cada segmento 
+    ao longo da linha, facilitando a manipulação e o desenho dos segmentos no canvas.*/
     const segmentos = [];
 
     const deltaX = endX - startX;
     const deltaY = endY - startY;
 
-    const steps = Math.max(Math.abs(deltaX), Math.abs(deltaY)) / (tamanhoPadrao / 2);  // dividindo conforme o grid
+    const steps = Math.max(Math.abs(deltaX), Math.abs(deltaY)) / (tamanhoPadrao / 2); 
 
     for (let i = 0; i <= steps; i++) {
         const x = startX + (deltaX / steps) * i;
@@ -87,6 +118,15 @@ function dividirLinhaEmSegmentos(startX, startY, endX, endY) {
 
 // função para verificar sobreposição de segmentos
 function verificarSobreposicao(startX, startY, endX, endY) {
+    /* a função 'verificarSobreposicao' analisa se uma nova linha desenhada 
+    sobrepõe alguma linha já existente no canvas. ela começa dividindo a nova 
+    linha em segmentos e para cada linha já desenhada, ela também divide 
+    em segmentos
+    depois, compara os segmentos da nova linha com os segmentos 
+    das linhas existentes, contando quantas vezes os pontos se cruzam 
+    se mais de um ponto de interseção for encontrado, isso significa que a 
+    nova linha sobrepõe a linha existente, e a função retorna 'true' 
+    caso contrário, se não houver interseções significativas, ela retorna 'false'*/
     const novaLinhaSegmentos = dividirLinhaEmSegmentos(startX, startY, endX, endY);
 
     for (let i = 0; i < stack.length; i++) {
@@ -104,33 +144,52 @@ function verificarSobreposicao(startX, startY, endX, endY) {
             }
         }
 
-        // se todos os segmentos tocarem, é sobreposição. Permite conexão em apenas um ponto
+        // se todos os segmentos tocarem, é sobreposição 
+        //Permite conexão em apenas um ponto
         if (intersecoes > 1) {
             return true;  // tem sobreposição total ou parcial
         }
     }
 
-    return false;  // não tme sobreposição relevante
+    return false;  // não tem sobreposição relevante
 }
 
 // tem que fazer até função pra parar de desenhar 
 function pararDesenho() {
+    /* a função é treta, é chamada quando o usuário finaliza o desenho 
+    de uma linha
+    primeiro, ela checa se o desenho está ativo, se não estiver, 
+    a função simplesmente retorna 
+    se estiver ativo, o estado de 'isDrawing' 
+    é definido como falso para parar o desenho
+    depois, a função verifica se a linha desenhada tem comprimento, 
+    ou seja, se as coordenadas de início 
+    e fim são iguais. se forem, a função retorna sem salvar a linha, 
+    pois isso significa que não há linha válida a ser adicionada 
+    após isso, a função chama 'verificarSobreposicao' para checar se a nova 
+    linha desenhada se sobrepõe a qualquer linha existente
+    se houver sobreposição, um alerta é exibido informando o usuário, e a função 
+    'redesenhar' é chamada para limpar a linha atual e atualizar o canvas 
+    sem a linha inválida 
+    por fim, se não houver sobreposição, a linha é 
+    adicionada ao 'stack' e o canvas é redesenhado para mostrar todas as 
+    linhas, incluindo a nova*/
     if (!isDrawing) return;
     isDrawing = false;
 
     // verifica se a linha desenhada é válida
     if (startX === endX && startY === endY) {
-        return; // Linha sem comprimento, não salva
+        return; // linha sem comprimento, não salva
     }
 
-    // cahama a função para verificar sobreposiçâo
+    // chama a função para verificar sobreposição
     const sobreposicao = verificarSobreposicao(startX, startY, endX, endY);
 
     if (sobreposicao) {
         alert("linhas sobrepostas");
 
-        // limpa a linha atual e redesenha todas as otras
-        redesenhar();  // redeesenha o estado atual do canvas sem a linha inválida
+        // limpa a linha atual e redesenha todas as outras
+        redesenhar();  // redesenha o estado atual do canvas sem a linha inválida
 
         return;  // não adiciona a linha sobreposta ao stack
     }
@@ -141,6 +200,17 @@ function pararDesenho() {
 }
 
 function DimensaoPortasJanelas() {
+    /* a função 'DimensaoPortasJanelas' cria campos para que o 
+    usuário possa inserir as dimensões e a quantidade de portas e janelas 
+    primeiro, ela busca o container onde os campos serão adicionados
+    depois, um novo grupo de campos é criado para inserir os valores 
+    de largura, altura e quantidade
+    cada campo de entrada é configurado como um número, 
+    com espaços reservados apropriados para guiar o usuário 
+    na entrada dos dados 
+    também é criado um botão de remover, que permite ao usuário excluir o grupo de campos, se necessário. 
+    por fim, todos os campos são anexados ao container, tornando-os 
+    visíveis na interface do usuário.*/
     const container = document.getElementById("dimensions-container");
 
     const fieldGroup = document.createElement("div");
@@ -179,6 +249,19 @@ function DimensaoPortasJanelas() {
 
 // função para calcular a área da parede
 function calcularComprimentoParede() {
+    /*a função 'calcularComprimentoParede' é responsável por calcular 
+    o comprimento total das paredes desenhadas no canvas 
+    ela começa definindo o tamanho do quadrado, que é a base para 
+    as conversões de pixels para metros 
+    em seguida, inicializa uma variável para somar os comprimentos das linhas 
+    a função percorre todas as linhas armazenadas na 'stack', 
+    utilizando o teorema de pitágoras para calcular a distância 
+    entre os pontos de início e fim de cada linha desenhada 
+    a distância calculada é convertida de pixels para metros, 
+    dividindo pelo tamanho do quadrado 
+    finalmente, todos os comprimentos são somados e o resultado total é retornado 
+    em metros, representando o comprimento total das paredes
+     */
     const tamanhoQuadrado = tamanhoPadrao;
     let linear = 0;
     for (let i = 0; i < stack.length; i++) {
@@ -194,27 +277,41 @@ function calcularComprimentoParede() {
 
 //função para calcular a área das portas e janelas e subtrair
 function calcularAreaAberturas() {
-    const larguraInputs = document.getElementsByName("largura[]");
-    const alturaInputs = document.getElementsByName("altura[]");
-    const quantidadeInputs = document.getElementsByName("quantidade[]");
+    /*essa função calcula a área total das aberturas, como portas e janelas,
+    com base nas dimensões e quantidades fornecidas pelo usuário
+    ela coleta os valores de largura, altura e quantidade de cada abertura
+    e soma suas áreas para obter o total*/
 
-    let areaTotalAberturas = 0;
+    const larguraInputs = document.getElementsByName("largura[]"); // obtém todos os inputs de largura
+    const alturaInputs = document.getElementsByName("altura[]"); // obtém todos os inputs de altura
+    const quantidadeInputs = document.getElementsByName("quantidade[]"); // obtém todos os inputs de quantidade
 
-    for (let i = 0; i < larguraInputs.length; i++) {
-        const largura = parseFloat(larguraInputs[i].value);
-        const altura = parseFloat(alturaInputs[i].value);
-        const quantidade = parseInt(quantidadeInputs[i].value);
+    let areaTotalAberturas = 0; // inicializa a área total das aberturas
 
+    for (let i = 0; i < larguraInputs.length; i++) { // percorre todos os inputs de largura
+        const largura = parseFloat(larguraInputs[i].value); // converte o valor de largura para número
+        const altura = parseFloat(alturaInputs[i].value); // converte o valor de altura para número
+        const quantidade = parseInt(quantidadeInputs[i].value); // converte o valor de quantidade para número inteiro
+
+        // verifica se os valores não são NaN antes de calcular a área
         if (!isNaN(largura) && !isNaN(altura) && !isNaN(quantidade)) {
-            areaTotalAberturas += largura * altura * quantidade;
+            areaTotalAberturas += largura * altura * quantidade; // calcula a área e adiciona ao total
         }
     }
 
-    return areaTotalAberturas;
+    return areaTotalAberturas; // retorna a área total das aberturas
 }
 
 // Função para calcular o número de blocos
 function calcularNumeroBlocos(alturaParede) {
+    /* a função calcula quantos blocos são necessários para a construção de uma parede,
+    considerando a altura da parede, o tipo de bloco selecionado e a área das aberturas 
+    (como portas e janelas) 
+    ela obtém as dimensões do bloco de acordo com a seleção 
+    do usuário, calcula a área total das aberturas, a área efetiva da parede e, 
+    em seguida, determina quantos blocos são necessários
+    se a área da parede for menor ou igual a zero, 
+    um alerta é exibido e a função retorna zero para os materiais*/
     const tipoBloco = document.getElementById('tipoBloco').value;
     let dimensoesBloco;
 
@@ -248,8 +345,16 @@ function calcularNumeroBlocos(alturaParede) {
 
 // Função para calcular materiais
 function calcularMateriais(alturaParede, areaParede) {
-
-    // levando em consideração que as medidas serão 1:4:.5 (cimento:areia:agua)
+    /* a função calcula a quantidade necessária de materiais (cimento, areia e água) 
+    para construir uma parede com base na altura e na área da parede. ela considera 
+    a proporção padrão de 1:4:0.5 para cimento, areia e água
+     primeiro, obtém o tipo de bloco selecionado e chama a função calcularNumeroBlocos para determinar 
+    quantos blocos serão necessários 
+    dependendo do tipo de bloco, ela define quantos blocos podem ser 
+    feitos com um saco de cimento e a quantidade de areia necessária por bloco 
+    em seguida, calcula o número de sacos de cimento, a quantidade total de 
+    areia e a quantidade de água em litros, e retorna esses valores formatados
+    se o cálculo de blocos falhar, retorna zero para todos os materiais*/
 
     const tipoBloco = document.getElementById('tipoBloco').value;
 
@@ -314,14 +419,28 @@ function exibirResultados(numeroBlocos, materiais) {
 const botaoDesfazer = document.getElementById('undoButton');
 botaoDesfazer.addEventListener('click', function () {
     if (stack.length < 1) return;
-    stack.pop();
+    stack.pop(); //como dentro do stack funciona como uma pilha, pra fazer o desfazer basta chamar um pop removendo o ultimo item adicionado
     redesenhar();
 });
 
 //fazendo algumas validaçoes antes de calcular
 const botaoCalcular = document.getElementById('calcularButton');
+
 botaoCalcular.addEventListener('click', function () {
-    if (stack.length < 1) {
+    /*ao clicar, verifica se há pelo menos uma linha desenhada (representada pela 
+    pilha 'stack') 
+    se não houver, exibe um alerta solicitando que o usuário desenhe a parede primeiro 
+    em seguida, tenta obter a altura da parede a partir do campo de entrada correspondente 
+    se a altura não for um número válido ou 
+    for menor ou igual a zero, um alerta é exibido solicitando uma altura válida 
+    se a altura estiver correta, chama a função calcularNumeroBlocos para 
+    determinar quantos blocos são necessários e a função calcularMateriais para 
+    obter a quantidade de materiais necessários 
+    por fim, exibe os resultados usando 
+    a função exibirResultados, que apresenta o número de blocos e a quantidade de 
+    materiais calculados*/
+
+   if (stack.length < 1) {
         alert("Desenhe a parede primeiro!");
         return;
     }
@@ -358,6 +477,15 @@ function limparNomeProjeto(nome) {
 
 // Função para salvar o projeto em um arquivo JSON
 function baixarProjeto() {
+    /*a função baixarProjeto coleta as informações do projeto, como a altura da 
+    parede, o tipo de bloco e o nome do projeto a partir dos campos de entrada do HTML 
+    o nome do arquivo é gerado chamando a função limparNomeProjeto 
+    em seguida, um objeto projeto é criado, contendo as informações coletadas, 
+    incluindo as coordenadas do desenho armazenadas na pilha 'stack' 
+    o objeto projeto é convertido em uma string JSON e um blob é criado para 
+    permitir o download 
+    um link temporário é criado, apontando para o blob, 
+    e o download do arquivo JSON é iniciado com o nome apropriado.*/
     const alturaParede = document.getElementById('alturaParede').value;
     const tipoBloco = document.getElementById('tipoBloco').value;
     const nomeProjetoInput = document.getElementById('nomeProjeto').value;
@@ -377,6 +505,14 @@ function baixarProjeto() {
 
 // função para carregar o projeto com JSON
 function carregarProjetoDoArquivo(event) {
+    /* a função carregarProjetoDoArquivo é acionada quando um arquivo é selecionado 
+    ela usa a interface FileReader para ler o conteúdo do arquivo selecionado 
+    quando o arquivo é carregado com sucesso, o conteúdo JSON é analisado e as 
+    informações do projeto, como a altura da parede e o tipo de bloco, são 
+    atualizadas nos campos de entrada correspondentes no html 
+    além disso, as coordenadas do desenho armazenadas na pilha 'stack' são recarregadas e a 
+    função redesenhar é chamada para atualizar a visualização do desenho no canvas
+    uma mensagem de alerta é exibida informando que o projeto foi carregado com sucesso.*/
     const file = event.target.files[0];
     const reader = new FileReader();
 
