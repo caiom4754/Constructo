@@ -7,6 +7,7 @@ let endX = 0;
 let endY = 0;
 let stack = [];
 const tamanhoPadrao = 40;
+//proxima alteração no código será ordenar as funções para aprimorar o funcionamento
 
 // função para desenhar o padrão quadriculado
 function desenharPadrao() {
