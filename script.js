@@ -7,7 +7,6 @@ let endX = 0;
 let endY = 0;
 let stack = [];
 const tamanhoPadrao = 40;
-//proxima alteração no código será ordenar as funções para aprimorar o funcionamento
 
 // função para desenhar o padrão quadriculado
 function desenharPadrao() {
@@ -81,7 +80,7 @@ function redesenhar() {
         context.moveTo(startX, startY);
         context.lineTo(endX, endY);
         context.strokeStyle = 'blue'; // cor da linha do desenho
-        context.lineWidth = 3;
+        context.lineWidth = 5;
         context.stroke();
     }
     if (isDrawing) {
@@ -89,7 +88,7 @@ function redesenhar() {
         context.moveTo(startX, startY);
         context.lineTo(endX, endY);
         context.strokeStyle = 'blue'; // cor da linha do desenho
-        context.lineWidth = 3;
+        context.lineWidth = 5;
         context.stroke();
     }
 }
@@ -174,7 +173,8 @@ function pararDesenho() {
     sem a linha inválida 
     por fim, se não houver sobreposição, a linha é 
     adicionada ao 'stack' e o canvas é redesenhado para mostrar todas as 
-    linhas, incluindo a nova*/
+    linhas, incluindo a nova.
+     */
     if (!isDrawing) return;
     isDrawing = false;
 
@@ -409,10 +409,10 @@ function exibirResultados(numeroBlocos, materiais) {
     materiaisElement.innerHTML = `
         Materiais necessários:
         <ul>
-            <li>Blocos: ${numeroBlocos} </li>
-            <li>Cimento: ${materiais.cimento} sacos (50kg)</li>
-            <li>Areia: ${materiais.areia} m³</li>
-            <li>Água: ${materiais.agua} litros</li>
+            <li>Blocos:     ${numeroBlocos} </li>
+            <li>Cimento:    ${materiais.cimento} sacos (50kg)</li>
+            <li>Areia:  ${materiais.areia} m³</li>
+            <li>Água:   ${materiais.agua} litros</li>
         </ul>
     `;
 }
@@ -423,6 +423,16 @@ botaoDesfazer.addEventListener('click', function () {
     stack.pop(); //como dentro do stack funciona como uma pilha, pra fazer o desfazer basta chamar um pop removendo o ultimo item adicionado
     redesenhar();
 });
+
+function refazer() {
+    if (redoStack.length > 0) {
+        const linhaRefazer = redoStack.pop();
+        stack.push(linhaRefazer); // Move a linha de volta para a pilha principal
+        redesenhar(); // Redesenha o canvas com a linha restaurada
+    } else {
+        alert("Nada para refazer!");
+    }
+}
 
 //fazendo algumas validaçoes antes de calcular
 const botaoCalcular = document.getElementById('calcularButton');
