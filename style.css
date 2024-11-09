@@ -1,0 +1,99 @@
+@charset "UTF-8";
+
+body {
+    background-color: rgb(46, 46, 46);
+    color: aliceblue;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+canvas{
+    border: solid 2px rgb(0, 0, 0);
+    background-color: white;
+    /* width: 125%;
+    height: 87%; */
+}
+
+input, select{
+    text-align: center; /* Centraliza o texto no campo de entrada */
+}
+
+button {
+    background-color: rgb(255, 102, 0);
+    border: solid 2px black;
+}
+
+aside{
+    margin-left: 15%;
+}
+
+section button, section input{
+    width: 24%;
+    height: 50px;
+    border-radius: 15px;
+}
+
+aside button, aside input, aside select{
+    width: 100%;
+    height: 40px;
+    border-radius: 15px;
+}
+
+.portas_janelas{
+    font-size: 1.4em;
+    text-align: center;
+}
+
+.definicao_parede_bloco {
+    text-align: left;
+}
+
+.resultadoMateriais {
+    width: 5%;
+    height: 10%;
+}
+
+#dimensions-container {
+    max-height: 200px;
+    /* Define a altura máxima do container */
+    overflow-y: auto;
+    /* Habilita a barra de rolagem vertical */
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    /* Empilha os elementos verticalmente */
+    gap: 10px;
+    /* Espaço entre os elementos */
+    margin-bottom: 15px;
+    /* Espaço inferior para separar os grupos */
+}
+
+.field-group input {
+    width: 100%;
+    /* O input preenche a largura disponível */
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.field-group button {
+    align-self: flex-end;
+    /* Alinha o botão de remover à direita */
+    padding: 5px 10px;
+    background-color: rgb(255, 102, 0);
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.field-group button:hover {
+    background-color: #ff4c4c;
+    /* Efeito de hover no botão de remover */
+}
