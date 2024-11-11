@@ -9,7 +9,7 @@ A presente proposta visa introduzir uma aplicação web acessível e conveniente
 O caminho percorrido no desenvolvimento deste projeto incluí a criação de uma calculadora de materiais, uma das funções exclusivas do aplicativo. A razão para isso se baseia na necessidade de remover as barreiras, facilitando a compreensão dos clientes graças a uma base mais detalhada do projeto, que inclui descrições completas de cada tijolo, cada saco de cimento, cada metro quadrado de areia e outros tipos de informação. 
 Portanto, espera-se que este Relatório consiga consolidar a viabilidade e o potencial do aplicativo ao empoderar pessoas interessadas em planejar as suas próprias residências. Desta forma, é retirada a complexidade por meio de uma solução simples e eficiente acerca da criação de plantas baixas, o que torna possível o acesso de qualquer um que tenha interesse em construir ou reformar a sua casa.
 
-3. DESENVOLVIMENTO
+2. DESENVOLVIMENTO
  
 Planejar e executar uma construção residencial é um empreendimento desafiador, tanto para leigos quanto para profissionais da construção civil. Uma das principais dificuldades encontradas nesse processo é realizar uma estimativa precisa dos custos com materiais. Muitas vezes, os orçamentos iniciais não conseguem prever adequadamente imprevistos e variações de preços, o que pode resultar em despesas adicionais e dificuldades financeiras inesperadas. 
 
