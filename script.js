@@ -221,22 +221,25 @@ function DimensaoPortasJanelas() {
     larguraInput.type = "number";
     larguraInput.placeholder = "Largura (m)";
     larguraInput.name = "largura[]";
+    larguraInput.min = "0";
     larguraInput.required = true;
 
     const alturaInput = document.createElement("input");
     alturaInput.type = "number";
     alturaInput.placeholder = "Altura (m)";
     alturaInput.name = "altura[]";
+    alturaInput.min = "0";
     alturaInput.required = true;
 
     const quantidadeInput = document.createElement("input");
     quantidadeInput.type = "number";
     quantidadeInput.placeholder = "Quantidade";
     quantidadeInput.name = "quantidade[]";
+    quantidadeInput.min = "0";
     quantidadeInput.required = true;
 
     const removeButton = document.createElement("button");
-    removeButton.innerText = "Remover";
+    removeButton.innerText = "X";
     removeButton.type = "button";
     removeButton.onclick = () => container.removeChild(fieldGroup);
 
