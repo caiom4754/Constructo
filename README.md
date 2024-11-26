@@ -5,7 +5,7 @@ A ideia central é remover barreiras técnicas e financeiras que dificultam o pl
 Este trabalho visa demonstrar a viabilidade e o impacto positivo dessa aplicação, que almeja empoderar indivíduos na organização de seus projetos residenciais, promovendo economia, eficiência e acessibilidade em construções e reformas.
 ________________________________________
 
-Visão geral:
+Resumo
 Este projeto apresenta o desenvolvimento de um aplicativo web inovador, voltado para o público leigo, com o objetivo de simplificar a criação de plantas residenciais e democratizar o planejamento de construções. O principal diferencial da ferramenta está em sua calculadora de materiais, que permite a estimativa precisa de insumos como tijolos, cimento, areia, entre outros, essenciais para a construção civil. Com uma interface intuitiva e de fácil navegação, o aplicativo foi projetado para capacitar usuários sem conhecimento técnico a criar projetos funcionais e bem fundamentados. Essa solução busca remover barreiras técnicas, tornando o processo de planejamento residencial mais acessível e eficiente, ao mesmo tempo que empodera o usuário com maior controle sobre seu projeto e orçamento.
 
 ________________________________________
