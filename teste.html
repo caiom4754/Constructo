@@ -15,25 +15,24 @@
 
 <body>
     <div class="row">
-        
         <article class="col-7">
-            
             <canvas id="canvas" width="960" height="520"></canvas>
 
             <section class="row, col-12">
 
                 <button id="undoButton">Desfazer</button>
+
                 <!-- Botões para baixar e carregar JSON -->
                 <button id="baixarProjetoButton">Baixar Projeto</button>
                 <button id="carregarArquivoButton">Carregar Projeto</button>
                 <input type="file" id="carregarArquivoInput" style="display:none;">
                 <input type="text" id="nomeProjeto" placeholder="Nome do Projeto">
-                
             </section>
 
         </article>
 
         <aside class="col-3">
+            
 
             <label for="tipoBloco">Tipo de Bloco:</label>
             <select id="tipoBloco">
@@ -46,7 +45,6 @@
             <label for="alturaParede">Altura da Parede (m):</label>
             <input type="number" id="alturaParede" min="0.0" step="0.5" >
             <br>
-            
             <div id="resultadosMateriais" class="resultadosMateriais">
                 Materiais necessários:
                 <ul>
@@ -56,17 +54,14 @@
                     <li>Água: 0 litros</li>
                 </ul>
             </div>
-            
-            <button id="calcularButton">Calcular</button>
             <p class="portas_janelas">Dimensões de Portas e Janelas</p>
             <div id="dimensions-container">
             </div>
             <br>
-            
             <button onclick="DimensaoPortasJanelas()">+ Adicionar Porta/Janela</button>
             
+            <button id="calcularButton">Calcular</button>
         </aside>
-        
     </div>
 
     <script src="script.js"></script>
