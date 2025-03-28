@@ -448,7 +448,7 @@ function refazer() {
         Swal.fire({
             title: 'Não há linhas para refazer',
             icon: 'info',
-            
+
         });
     }
 }
@@ -561,7 +561,7 @@ function baixarProjeto() {
         portasJanelas.push({ largura, altura, quantidade });
     });
 
-    if(alturaParede == 0 || alturaParede == null){
+    if (alturaParede == 0 || alturaParede == null) {
         Swal.fire({
             title: 'Erro',
             text: 'A altura da parede não pode ser 0 ou nula',
@@ -569,7 +569,7 @@ function baixarProjeto() {
         })
         return;
     }
-    if(stack.length == 0 || stack.length == null){
+    if (stack.length == 0 || stack.length == null) {
         Swal.fire({
             title: 'Erro',
             text: 'É necessário desenhar o projeto para salva-lo',
@@ -579,14 +579,14 @@ function baixarProjeto() {
     }
 
     // adiciona ao objeto do projeto
-    const projeto = {
+    const dados = {
         alturaParede: alturaParede,
         tipoBloco: tipoBloco,
         stack: stack, // salva as coordenadas do desenho
         portasJanelas: portasJanelas // salva portas e janelas
     };
 
-    const blob = new Blob([JSON.stringify(projeto)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(dados)], { type: 'application/json' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = nomeArquivo + '.json';
@@ -668,11 +668,11 @@ function abrirSeletorArquivo() {
     document.getElementById('carregarArquivoInput').click();
 }
 
-function salvarProjeto() {
+async function salvarProjeto() {
+    //~ CAPTURA DOS DADOS
     const alturaParede = document.getElementById('alturaParede').value;
     const tipoBloco = document.getElementById('tipoBloco').value;
     const nomeProjetoInput = document.getElementById('nomeProjeto').value;
-    const nomeArquivo = limparNomeProjeto(nomeProjetoInput);
 
     // coletar dados das portas e janelas
     const portasJanelas = [];
@@ -685,7 +685,8 @@ function salvarProjeto() {
         portasJanelas.push({ largura, altura, quantidade });
     });
 
-    if(alturaParede == 0 || alturaParede == null){
+    //* ERROS
+    if (alturaParede == 0 || alturaParede == null) {
         Swal.fire({
             title: 'Erro',
             text: 'A altura da parede não pode ser 0 ou nula',
@@ -693,7 +694,7 @@ function salvarProjeto() {
         })
         return;
     }
-    if(stack.length == 0 || stack.length == null){
+    if (stack.length == 0 || stack.length == null) {
         Swal.fire({
             title: 'Erro',
             text: 'É necessário desenhar o projeto para salva-lo',
@@ -702,15 +703,60 @@ function salvarProjeto() {
         return;
     }
 
-    // adiciona ao objeto do projeto
-    const projeto = {
-        alturaParede: alturaParede,
-        tipoBloco: tipoBloco,
-        stack: stack, // salva as coordenadas do desenho
-        portasJanelas: portasJanelas // salva portas e janelas
-    };
+    // Verifica se o nome do projeto foi informado
+    if (!nomeProjetoInput) {
+        Swal.fire({
+            title: 'Erro',
+            text: 'O nome do projeto é obrigatório',
+            icon: 'error',
+        });
+        return;
+    }
+    //* ERROS TERMINA AQIO
 
+    try {
+        //* ENVIO DOS DADOS 
+        const dados = {
+            alturaParede: alturaParede,
+            tipoBloco: tipoBloco,
+            stack: stack, // salva as coordenadas do desenho
+            portasJanelas: portasJanelas 
+        };
+
+        const formData = new FormData();
+        formData.append('dados', JSON.stringify(dados));
+        formData.append('nome', nomeProjetoInput)
+
+        console.log('Enviando para o PHP:', dados);
+
+        // Envio dos dados
+        const response = await fetch('http://localhost:8080/Constructo/conexao.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        const resultado = await response.json();
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Sucesso!',
+            text: resultado.mensagem || 'Projeto salvo com sucesso',
+        });
+    } catch (error) {
+        console.error('Erro ao salvar:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: error.message || 'erro ao salvar',
+        });
+    }
 }
+
+
 
 // adcicionar eventos aos botões
 document.getElementById('salvarProjeto').addEventListener('click', salvarProjeto);
