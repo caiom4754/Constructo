@@ -6,7 +6,7 @@ let startY = 0;
 let endX = 0;
 let endY = 0;
 let stack = [];
-const tamanhoPadrao = 40;
+let tamanhoPadrao = 40;
 
 // função para desenhar o padrão quadriculado
 function desenharPadrao() {
@@ -105,7 +105,7 @@ function dividirLinhaEmSegmentos(startX, startY, endX, endY) {
     const deltaX = endX - startX;
     const deltaY = endY - startY;
 
-    const steps = Math.max(Math.abs(deltaX), Math.abs(deltaY)) / (tamanhoPadrao / 2); 
+    const steps = Math.max(Math.abs(deltaX), Math.abs(deltaY)) / (tamanhoPadrao / 2);
 
     for (let i = 0; i <= steps; i++) {
         const x = startX + (deltaX / steps) * i;
@@ -187,7 +187,11 @@ function pararDesenho() {
     const sobreposicao = verificarSobreposicao(startX, startY, endX, endY);
 
     if (sobreposicao) {
-        alert("linhas sobrepostas");
+        Swal.fire({
+            title: 'Atenção',
+            text: 'A linha desenhada se sobrepõe a outra linha existente.',
+            icon: 'warning'
+        })
 
         // limpa a linha atual e redesenha todas as outras
         redesenhar();  // redesenha o estado atual do canvas sem a linha inválida
@@ -327,10 +331,14 @@ function calcularNumeroBlocos(alturaParede) {
             dimensoesBloco = { comprimento: 0.19, altura: 0.19, largura: 0.09 };
             break;
         case 'ecologico25x12.5x6.25':
-            dimensoesBloco = { comprimento: 0.25, altura: 0.125, largura : 0.0625 };
+            dimensoesBloco = { comprimento: 0.25, altura: 0.125, largura: 0.0625 };
             break;
         default:
-            alert("Tipo de bloco não reconhecido!");
+            Swal.fire({
+                title: 'Erro',
+                text: 'Tipo de bloco não encontrado',
+                icon: 'error',
+            })
             return;
     }
 
@@ -339,8 +347,12 @@ function calcularNumeroBlocos(alturaParede) {
     const areaBloco = dimensoesBloco.comprimento * dimensoesBloco.altura;
     const numeroBlocos = Math.ceil(areaParede / areaBloco);
 
-    if(areaParede <= 0){
-        alert("Área da parede não pode ser menor ou igual a zero");
+    if (areaParede <= 0) {
+        Swal.fire({
+            title: 'Erro',
+            text: 'Área da parede inválida',
+            icon: 'error',
+        })
         return { cimento: 0, areia: 0, agua: 0 };
     }
 
@@ -377,11 +389,11 @@ function calcularMateriais(alturaParede, areaParede) {
             areiaPorBloco = 0.020;
             break;
         case 'ceramico19x19x09':
-            blocosPorSaco = 200; 
+            blocosPorSaco = 200;
             areiaPorBloco = 0.015;
             break;
         case 'ecologico25x12.5x6.25':
-            blocosPorSaco = 250; 
+            blocosPorSaco = 250;
             areiaPorBloco = 0.012;
             break;
         default:
@@ -392,7 +404,7 @@ function calcularMateriais(alturaParede, areaParede) {
     const sacosCimento = (numBlocos / blocosPorSaco);
 
     // Calculando a quantidade de areia
-    const areiaPorM3 = areaParede * 0.020;
+    const areiaPorM3 = areaParede * areiaPorBloco;
 
     //calcular a quantidade de awa
     const aguaLitros = (sacosCimento * 50) * 0.5;
@@ -433,7 +445,11 @@ function refazer() {
         stack.push(linhaRefazer); // Move a linha de volta para a pilha principal
         redesenhar(); // Redesenha o canvas com a linha restaurada
     } else {
-        alert("Nada para refazer!");
+        Swal.fire({
+            title: 'Não há linhas para refazer',
+            icon: 'info',
+            
+        });
     }
 }
 
@@ -454,13 +470,51 @@ botaoCalcular.addEventListener('click', function () {
     a função exibirResultados, que apresenta o número de blocos e a quantidade de 
     materiais calculados*/
 
-   if (stack.length < 1) {
-        alert("Desenhe a parede primeiro!");
+    if (stack.length < 1) {
+        // Verifica se SweetAlert2 está disponível
+        if (typeof Swal !== 'undefined' && Swal.fire) {
+            Swal.fire({
+                title: 'Atenção',
+                text: 'Desenhe a parede antes de calcular',
+                icon: 'warning',
+            });
+        } else {
+            // Fallback para alerta padrão + console.log
+            alert('Desenhe a parede antes de calcular');
+
+            // Adiciona visualização do erro no DOM para debug
+            const errorBox = document.createElement('div');
+            errorBox.style = 'position: fixed; top: 10px; left: 10px; background: red; color: white; padding: 10px; z-index: 10000';
+            errorBox.textContent = 'Erro: Desenhe paredes primeiro';
+            document.body.appendChild(errorBox);
+
+            // Remove após 5 segundos
+            setTimeout(() => errorBox.remove(), 5000);
+        }
         return;
     }
     const alturaParede = parseFloat(document.getElementById('alturaParede').value);
     if (isNaN(alturaParede) || alturaParede <= 0) {
-        alert("Insira uma altura válida para a parede!");
+        // Verifica se SweetAlert2 está disponível
+        if (typeof Swal !== 'undefined' && Swal.fire) {
+            Swal.fire({
+                title: 'Atenção',
+                text: 'Insira um valor para a altura da parede',
+                icon: 'warning',
+            });
+        } else {
+            // Fallback para alerta padrão + console.log
+            alert('Insira uma altura para a altura da parede');
+
+            // Adiciona visualização do erro no DOM para debug
+            const errorBox = document.createElement('div');
+            errorBox.style = 'position: fixed; top: 10px; left: 10px; background: red; color: white; padding: 10px; z-index: 10000';
+            errorBox.textContent = 'Erro: Insira um valor para a parede primeiro';
+            document.body.appendChild(errorBox);
+
+            // Remove após 5 segundos
+            setTimeout(() => errorBox.remove(), 5000);
+        }
         return;
     }
     const numeroBlocos = calcularNumeroBlocos(alturaParede);
@@ -491,23 +545,45 @@ function limparNomeProjeto(nome) {
 
 // Função para salvar o projeto em um arquivo JSON
 function baixarProjeto() {
-    /*a função baixarProjeto coleta as informações do projeto, como a altura da 
-    parede, o tipo de bloco e o nome do projeto a partir dos campos de entrada do HTML 
-    o nome do arquivo é gerado chamando a função limparNomeProjeto 
-    em seguida, um objeto projeto é criado, contendo as informações coletadas, 
-    incluindo as coordenadas do desenho armazenadas na pilha 'stack' 
-    o objeto projeto é convertido em uma string JSON e um blob é criado para 
-    permitir o download 
-    um link temporário é criado, apontando para o blob, 
-    e o download do arquivo JSON é iniciado com o nome apropriado.*/
     const alturaParede = document.getElementById('alturaParede').value;
     const tipoBloco = document.getElementById('tipoBloco').value;
     const nomeProjetoInput = document.getElementById('nomeProjeto').value;
     const nomeArquivo = limparNomeProjeto(nomeProjetoInput);
+
+    // coletar dados das portas e janelas
+    const portasJanelas = [];
+    const campos = document.querySelectorAll("#dimensions-container .field-group");
+    campos.forEach(campo => {
+        const largura = campo.querySelector("input[name='largura[]']").value;
+        const altura = campo.querySelector("input[name='altura[]']").value;
+        const quantidade = campo.querySelector("input[name='quantidade[]']").value;
+
+        portasJanelas.push({ largura, altura, quantidade });
+    });
+
+    if(alturaParede == 0 || alturaParede == null){
+        Swal.fire({
+            title: 'Erro',
+            text: 'A altura da parede não pode ser 0 ou nula',
+            icon: 'error',
+        })
+        return;
+    }
+    if(stack.length == 0 || stack.length == null){
+        Swal.fire({
+            title: 'Erro',
+            text: 'É necessário desenhar o projeto para salva-lo',
+            icon: 'error',
+        })
+        return;
+    }
+
+    // adiciona ao objeto do projeto
     const projeto = {
         alturaParede: alturaParede,
         tipoBloco: tipoBloco,
-        stack: stack, // salva as cooedenadas do desenho
+        stack: stack, // salva as coordenadas do desenho
+        portasJanelas: portasJanelas // salva portas e janelas
     };
 
     const blob = new Blob([JSON.stringify(projeto)], { type: 'application/json' });
@@ -519,14 +595,6 @@ function baixarProjeto() {
 
 // função para carregar o projeto com JSON
 function carregarProjetoDoArquivo(event) {
-    /* a função carregarProjetoDoArquivo é acionada quando um arquivo é selecionado 
-    ela usa a interface FileReader para ler o conteúdo do arquivo selecionado 
-    quando o arquivo é carregado com sucesso, o conteúdo JSON é analisado e as 
-    informações do projeto, como a altura da parede e o tipo de bloco, são 
-    atualizadas nos campos de entrada correspondentes no html 
-    além disso, as coordenadas do desenho armazenadas na pilha 'stack' são recarregadas e a 
-    função redesenhar é chamada para atualizar a visualização do desenho no canvas
-    uma mensagem de alerta é exibida informando que o projeto foi carregado com sucesso.*/
     const file = event.target.files[0];
     const reader = new FileReader();
 
@@ -537,11 +605,59 @@ function carregarProjetoDoArquivo(event) {
         document.getElementById('alturaParede').value = projeto.alturaParede;
         document.getElementById('tipoBloco').value = projeto.tipoBloco;
 
-        // recarrega as cooedenadas do desenho
+        // recarrega as coordenadas do desenho
         stack = projeto.stack;
         redesenhar();
 
-        alert('Projeto carregado com sucesso!');
+        // recarrega as portas e janelas
+        const container = document.getElementById("dimensions-container");
+        container.innerHTML = ""; // limpa os campos existentes
+        if (projeto.portasJanelas) {
+            projeto.portasJanelas.forEach(item => {
+                const fieldGroup = document.createElement("div");
+                fieldGroup.classList.add("field-group");
+
+                const larguraInput = document.createElement("input");
+                larguraInput.type = "number";
+                larguraInput.placeholder = "Largura (m)";
+                larguraInput.name = "largura[]";
+                larguraInput.value = item.largura;
+                larguraInput.required = true;
+
+                const alturaInput = document.createElement("input");
+                alturaInput.type = "number";
+                alturaInput.placeholder = "Altura (m)";
+                alturaInput.name = "altura[]";
+                alturaInput.value = item.altura;
+                alturaInput.required = true;
+
+                const quantidadeInput = document.createElement("input");
+                quantidadeInput.type = "number";
+                quantidadeInput.placeholder = "Quantidade";
+                quantidadeInput.name = "quantidade[]";
+                quantidadeInput.value = item.quantidade;
+                quantidadeInput.required = true;
+
+                // botão de remover
+                const removeButton = document.createElement("button");
+                removeButton.innerText = "X";
+                removeButton.type = "button";
+                removeButton.onclick = () => container.removeChild(fieldGroup);
+
+                fieldGroup.appendChild(larguraInput);
+                fieldGroup.appendChild(alturaInput);
+                fieldGroup.appendChild(quantidadeInput);
+                fieldGroup.appendChild(removeButton); // adiciona o botão ao grupo
+
+                container.appendChild(fieldGroup);
+            });
+        }
+
+        Swal.fire({
+            title: "Sucesso",
+            text: "Projeto carregado com sucesso",
+            icon: "success",
+        });
     };
 
     reader.readAsText(file);
@@ -552,9 +668,52 @@ function abrirSeletorArquivo() {
     document.getElementById('carregarArquivoInput').click();
 }
 
+function salvarProjeto() {
+    const alturaParede = document.getElementById('alturaParede').value;
+    const tipoBloco = document.getElementById('tipoBloco').value;
+    const nomeProjetoInput = document.getElementById('nomeProjeto').value;
+    const nomeArquivo = limparNomeProjeto(nomeProjetoInput);
+
+    // coletar dados das portas e janelas
+    const portasJanelas = [];
+    const campos = document.querySelectorAll("#dimensions-container .field-group");
+    campos.forEach(campo => {
+        const largura = campo.querySelector("input[name='largura[]']").value;
+        const altura = campo.querySelector("input[name='altura[]']").value;
+        const quantidade = campo.querySelector("input[name='quantidade[]']").value;
+
+        portasJanelas.push({ largura, altura, quantidade });
+    });
+
+    if(alturaParede == 0 || alturaParede == null){
+        Swal.fire({
+            title: 'Erro',
+            text: 'A altura da parede não pode ser 0 ou nula',
+            icon: 'error',
+        })
+        return;
+    }
+    if(stack.length == 0 || stack.length == null){
+        Swal.fire({
+            title: 'Erro',
+            text: 'É necessário desenhar o projeto para salva-lo',
+            icon: 'error',
+        })
+        return;
+    }
+
+    // adiciona ao objeto do projeto
+    const projeto = {
+        alturaParede: alturaParede,
+        tipoBloco: tipoBloco,
+        stack: stack, // salva as coordenadas do desenho
+        portasJanelas: portasJanelas // salva portas e janelas
+    };
+
+}
+
 // adcicionar eventos aos botões
+document.getElementById('salvarProjeto').addEventListener('click', salvarProjeto);
 document.getElementById('baixarProjetoButton').addEventListener('click', baixarProjeto);
 document.getElementById('carregarArquivoInput').addEventListener('change', carregarProjetoDoArquivo);
 document.getElementById('carregarArquivoButton').addEventListener('click', abrirSeletorArquivo);
-
-//postgre**
