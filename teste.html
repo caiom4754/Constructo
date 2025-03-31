@@ -8,8 +8,9 @@
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
-        </script>
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="style.css">
     <title>Calculadora de Blocos</title>
@@ -19,22 +20,21 @@
     <div class="row">
         <article class="col-7">
             <canvas id="canvas" width="960" height="520"></canvas>
-
-            <section class="row, col-12">
-                <button id="undoButton">Desfazer</button>
+            <section class=" col-12">
+                <button id="undoButton" class="fas fa-undo"></button>
                 <!-- Botões para baixar e carregar JSON -->
-                <button id="salvarProjeto">Salvar</button>
-                <button id="baixarProjetoButton">Baixar Projeto</button>
-                <button id="carregarArquivoButton">Carregar Projeto</button>
+                <button id="salvarProjeto" class="fas fa-save"></button>
+                <button id="baixarProjetoButton" class="fas fa-download"></button>
+                <button id="carregarArquivoButton" class="fas fa-upload"></button>
+                <button id="voltarHome" class="fas fa-home" onclick="window.location.href='home.html'"></button>
+                <button id="calculadora" class="fas fa-calculator" onclick="window.location.href='home.html'"></button>
+                <button id="informacoes" class="fas fa-info-circle" onclick="window.location.href='home.html'"></button>
                 <input type="file" id="carregarArquivoInput" style="display:none;">
                 <input type="text" id="nomeProjeto" placeholder="Nome do Projeto">
             </section>
-
         </article>
 
         <aside class="col-3">
-
-
             <label for="tipoBloco">Tipo de Bloco:</label>
             <select id="tipoBloco">
                 <option value="concreto34x19x14">Concreto 34 x 19 x 14</option>
@@ -42,7 +42,6 @@
                 <option value="ecologico25x12.5x6.25">Ecológico 25 x 12.5 x 6.25</option>
             </select>
             <br>
-
             <label for="alturaParede">Altura da Parede (m):</label>
             <input type="number" id="alturaParede" min="0.0" step="0.5">
             <br>
@@ -60,12 +59,12 @@
             </div>
             <br>
             <button onclick="DimensaoPortasJanelas()">+ Adicionar Porta/Janela</button>
-
             <button id="calcularButton">Calcular</button>
         </aside>
     </div>
 
     <script src="script.js"></script>
+
 </body>
 
 </html>
