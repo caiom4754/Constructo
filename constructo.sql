@@ -8,3 +8,4 @@ create table projetos(
     data_atualizacao timestamp default current_timestamp on update current_timestamp,
     dados JSON not null
 );
+ 
