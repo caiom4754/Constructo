@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 body {
-    background-color: rgb(46, 46, 46);
+    background-color: rgb(30, 31, 32);
     color: aliceblue;
     max-width: 100vw;
     overflow-x: hidden;
@@ -13,6 +13,75 @@ canvas {
     /* width: 125%;
     height: 87%; */
 }
+
+header {
+    border: 2px solid #E67E22;
+    /* Laranja semelhante ao da logo */
+}
+
+.projeto-card {
+    width: 100%;
+    height: 120px;
+    background-color: #00d9ff;
+    border-radius: 10px;
+    border: 1px solid #2600ff;
+    position: relative;
+    overflow: hidden;
+}
+
+.grid-fundo {
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(180deg, rgba(54, 32, 255, 0.6) 0px, transparent 10px),
+        repeating-linear-gradient(90deg, rgba(21, 165, 255, 0.6) 0px, transparent 10px);
+}
+
+.plus-icon {
+    font-size: 40px;
+    font-weight: bold;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.linha-separadora {
+    border-top: 2px solid #777;
+    margin: 20px 0;
+}
+
+
+nav {
+    background-image: url('img/nav.jpg');
+    background-repeat: repeat;
+    background-size: 30vw 30vh;
+    height: 25vh;
+    border: rgb(255, 102, 0);
+    display: flex;
+    justify-content: center;
+    /* Centraliza horizontalmente */
+    align-items: center;
+    /* Centraliza verticalmente */
+}
+
+nav img {
+    width: 30vw;
+    height: 20vh;
+    display: block;
+    /* Garante que a imagem não seja inline */
+    display: flex;
+    justify-content: center;
+    /* Centraliza horizontalmente */
+    align-items: center;
+    /* Centraliza verticalmente */
+
+}
+
 
 
 input,
@@ -26,7 +95,7 @@ button {
     border: solid 2px black;
 }
 
-button:hover{
+button:hover {
     background-color: rgb(255, 153, 0);
 }
 
@@ -102,3 +171,64 @@ aside select {
     background-color: #ff4c4c;
     /* Efeito de hover no botão de remover */
 }
+
+/* Estilos gerais do footer */
+footer {
+    width: 100%;
+    background-color: #0f0d0d;
+    padding: 20px 0;
+    border: 2px solid #E67E22;
+  }
+  
+  /* Divisão do footer superior e inferior */
+  .footer-top, .footer-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 20px;
+  }
+  
+  /* Cada item dentro do footer */
+  .footer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 900px; /* Limita a largura máxima */
+  }
+  
+  /* Estilização do ícone da calculadora */
+  footer .fas.fa-calculator {
+    font-size: 30px;
+    color: #ff6600; /* Laranja */
+  }
+  
+  /* Estilização do texto */
+  .footer-item p {
+    text-align: center;
+    font-size: 16px;
+    color: #ffffff;
+    margin: 0 10px; /* Espaçamento entre ícone e texto */
+    flex: 1; /* Faz o texto ocupar o espaço restante */
+  }
+  
+  /* Estilização da seta */
+  footer .fas.fa-arrow-right {
+    font-size: 30px;
+    color: #ff6600;
+  }
+  footer .fas.fa-info-circle {
+    font-size: 30px;
+    color: #ff6600;
+  }
+  /* Ajustes responsivos */
+  @media (max-width: 768px) {
+    .footer-top, .footer-bottom {
+      flex-direction: column; /* Coloca os itens um embaixo do outro em telas menores */
+    }
+  
+    .footer-item p {
+      font-size: 14px;
+    }
+  }
+  
