@@ -7,7 +7,6 @@ let endX = 0;
 let endY = 0;
 let stack = [];
 let tamanhoPadrao = 40;
-
 // função para desenhar o padrão quadriculado
 function desenharPadrao() {
     // define a quantidade de linhas e colunas para o padrão com base no tamanho do canvas e do tamanho do padrão
@@ -715,7 +714,7 @@ async function salvarProjeto() {
     //* ERROS TERMINA AQIO
 
     try {
-        //* ENVIO DOS DADOS 
+        //* ENVIO DOS DADOS (nome + dados)
         const dados = {
             alturaParede: alturaParede,
             tipoBloco: tipoBloco,
@@ -757,9 +756,119 @@ async function salvarProjeto() {
 }
 
 
+// Função para chamar quando o ID do projeto é recuperado do localStorage
+const idProjeto = localStorage.getItem('idProjeto');
+if (idProjeto) {
+    carregarProjeto(idProjeto);
+} else {
+    console.error('ID do projeto não encontrado no localStorage.');
+}
+
+function carregarProjeto(idProjeto) {
+    fetch(`http://localhost:8080/Constructo/conexao.php?id=${idProjeto}`)
+        .then(response => response.json())
+        .then(projeto => {
+            // veriifca se os dados do projeto estão corretos
+            if (!projeto || !projeto.dados) {
+                console.error("Dados do projeto não encontrados ou inválidos.");
+                Swal.fire({
+                    title: "Erro",
+                    text: "Projeto não encontrado ou dados inválidos.",
+                    icon: "error",
+                });
+                return;
+            }
+
+            // tenta fazer o parse dos dados (dados é uma string jsonm)
+            let dados;
+            try {
+                dados = JSON.parse(projeto.dados);
+            } catch (error) {
+                console.error("Erro ao fazer o parse dos dados:", error);
+                Swal.fire({
+                    title: "Erro",
+                    text: "Erro ao carregar os dados do projeto.",
+                    icon: "error",
+                });
+                return;
+            }
+
+            // atualiza os campos de altura, tipo de bloco e nome
+            document.getElementById('alturaParede').value = dados.alturaParede;
+            document.getElementById('tipoBloco').value = dados.tipoBloco;
+            document.getElementById('nomeProjeto').value = projeto.nome;
+
+            // recarrega as coordenadas do desenho
+            stack = dados.stack;
+            redesenhar(); // Re-desenha as linhas no canvas
+
+            // recarrega as portas e janelas
+            const container = document.getElementById("dimensions-container");
+            container.innerHTML = ""; // limpa os campos existentes
+
+            
+            if (dados.portasJanelas && Array.isArray(dados.portasJanelas)) {
+                dados.portasJanelas.forEach(item => {
+                    const fieldGroup = document.createElement("div");
+                    fieldGroup.classList.add("field-group");
+
+                    const larguraInput = document.createElement("input");
+                    larguraInput.type = "number";
+                    larguraInput.placeholder = "Largura (m)";
+                    larguraInput.name = "largura[]";
+                    larguraInput.value = item.largura;
+                    larguraInput.required = true;
+
+                    const alturaInput = document.createElement("input");
+                    alturaInput.type = "number";
+                    alturaInput.placeholder = "Altura (m)";
+                    alturaInput.name = "altura[]";
+                    alturaInput.value = item.altura;
+                    alturaInput.required = true;
+
+                    const quantidadeInput = document.createElement("input");
+                    quantidadeInput.type = "number";
+                    quantidadeInput.placeholder = "Quantidade";
+                    quantidadeInput.name = "quantidade[]";
+                    quantidadeInput.value = item.quantidade;
+                    quantidadeInput.required = true;
+
+                    // Botão de remover
+                    const removeButton = document.createElement("button");
+                    removeButton.innerText = "X";
+                    removeButton.type = "button";
+                    removeButton.onclick = () => container.removeChild(fieldGroup);
+
+                    fieldGroup.appendChild(larguraInput);
+                    fieldGroup.appendChild(alturaInput);
+                    fieldGroup.appendChild(quantidadeInput);
+                    fieldGroup.appendChild(removeButton);
+
+                    container.appendChild(fieldGroup);
+                });
+            }
+
+            Swal.fire({
+                title: "Sucesso",
+                text: "Projeto carregado com sucesso",
+                icon: "success",
+            });
+        })
+        .catch(error => {
+            console.error("Erro ao carregar o projeto:", error);
+            Swal.fire({
+                title: "Erro",
+                text: "Não foi possível carregar o projeto.",
+                icon: "error",
+            });
+        });
+}
 
 // adcicionar eventos aos botões
 document.getElementById('salvarProjeto').addEventListener('click', salvarProjeto);
 document.getElementById('baixarProjetoButton').addEventListener('click', baixarProjeto);
 document.getElementById('carregarArquivoInput').addEventListener('change', carregarProjetoDoArquivo);
 document.getElementById('carregarArquivoButton').addEventListener('click', abrirSeletorArquivo);
+
+//& NOS FETCH SEMPRE COLAR ESSE LINK http://localhost:8080/Constructo/conexao.php
+//~ FIM
