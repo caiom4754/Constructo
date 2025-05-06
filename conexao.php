@@ -12,6 +12,9 @@ $pdo = new PDO('mysql:host=localhost;dbname=constructo;port=3308;', 'root', '');
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
+    if ($id == "novoProjeto") {
+        exit;
+    }
     if ($id > 0) {
         $sql = 'SELECT * FROM projetos WHERE id = :id';
         $stm = $pdo->prepare($sql);
@@ -44,6 +47,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = json_decode($dados, true);
     $datajson = json_encode($data);
 
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM projetos WHERE nome = ?");
+    $stmt->execute([$nome]);
+    if ($stmt->fetchColumn() > 0) {
+        echo json_encode(["erro" => "Já existe um projeto com esse nome"]);
+        exit;
+    }
+
+
     // Verifica se o JSON foi decodificado corretamente
     if (json_last_error() != JSON_ERROR_NONE) {
         echo json_encode(['mensagem' => 'Erro ao decodificar JSON']);
@@ -73,9 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         http_response_code(400); // Bad Request
         exit;
     }
-} else {
-    echo json_encode(['mensagem' => 'Método de requisição inválido']);
-    http_response_code(405); // Method Not Allowed
-    exit;
 }
-?>
+
+
