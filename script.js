@@ -7,70 +7,62 @@ let endX = 0;
 let endY = 0;
 let stack = [];
 let tamanhoPadrao = 40;
-// função para desenhar o padrão quadriculado
+
+
+
 function desenharPadrao() {
-    // define a quantidade de linhas e colunas para o padrão com base no tamanho do canvas e do tamanho do padrão
     const linhas = Math.ceil(canvas.height / tamanhoPadrao);
     const colunas = Math.ceil(canvas.width / tamanhoPadrao);
-    // define a cor dos quadrados
     context.fillStyle = '#ccc';
-    // percorre cada linha e coluna para desenhar o padrão quadriculado
     for (let linha = 0; linha < linhas; linha++) {
         for (let coluna = 0; coluna < colunas; coluna++) {
-            // verifica se a soma dos índices da linha e coluna é par para alternar o preenchimento, criando o efeito quadriculado
             if ((linha + coluna) % 2 === 0) {
-                // desenha um retângulo com a cor definida em posições alternadas
                 context.fillRect(coluna * tamanhoPadrao, linha * tamanhoPadrao, tamanhoPadrao, tamanhoPadrao);
             }
         }
     }
 }
 
-// desenhar o padrão quadriculado logo que iniciar a pagina
-desenharPadrao();
+desenharPadrao()
 
 function snapGrid(coord) {
-    // arredonda a coordenada para o ponto mais próximo no grid, usando a metade do tamanho do padrão quadriculado
     return Math.round(coord / (tamanhoPadrao / 2)) * (tamanhoPadrao / 2);
-};
-
-// função para começar o desenho
-function comecarDesenho(e) {
-    // indica que o desenho foi iniciado ao pressionar o mouse
-    isDrawing = true;
-    // ajusta a coordenada x inicial para o grid, arredondando para se alinhar ao padrão
-    startX = snapGrid(e.offsetX);
-    // ajusta a coordenada y inicial para o grid, arredondando para se alinhar ao padrão
-    startY = snapGrid(e.offsetY);
 }
 
-// função para desenhar durante o arrasto do mouse
+function obterCoordenadasMouse(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+        x: snapGrid(e.clientX - rect.left),
+        y: snapGrid(e.clientY - rect.top)
+    };
+}
+
+function comecarDesenho(e) {
+    isDrawing = true;
+    const pos = obterCoordenadasMouse(e);
+    startX = pos.x;
+    startY = pos.y;
+}
+
 function desenhar(e) {
-    /* verifica se o desenho está ativo, caso não esteja, interrompe a função,
-    caso esteja ativo, ajusta as coordenadas finais (endX e endY) usando o snapgrid 
-    para alinhar as coordenadas do ponto atual do mouse ao grid,
-    depois, chama a função redesenhar para atualizar o canvas e refletir o traço ou
-    ajuste realizado */
     if (!isDrawing) return;
-    endX = snapGrid(e.offsetX);
-    endY = snapGrid(e.offsetY);
+    const pos = obterCoordenadasMouse(e);
+    endX = pos.x;
+    endY = pos.y;
     redesenhar();
 }
 
-// função para desenhar a linhas retas
+function pararDesenho(e) {
+    if (!isDrawing) return;
+    isDrawing = false;
+    const pos = obterCoordenadasMouse(e);
+    endX = pos.x;
+    endY = pos.y;
+    stack.push({ startX, startY, endX, endY });
+    redesenhar();
+}
+
 function redesenhar() {
-    /* aqui a gente limpa o canvas para não ter linhas por cima de outras
-    depois, chamamos a função desenharPadrao pra colocar padrão de fundo 
-
-    em seguida, vamos dar uma olhada em cada linha que já desenhamos e guardamos no stack
-    pra cada linha, a gente desenha do ponto inicial (startX, startY) até o ponto final (endX, endY),
-    tudo azul e com uma largura de 3 pixels 
-
-    se ainda estamos desenhando, também desenhamos a linha que estamos criando no momento
-    com as mesmas cores e estilos, assim da pra ver o que estamos fazendo até terminar de desenhar
-    e guardar essa linha no stack 
-    
-    sem essa função, ocorria de a cada nova linha íamos desenhar, a anterior sumia*/
     context.clearRect(0, 0, canvas.width, canvas.height);
     desenharPadrao();
     for (let i = 0; i < stack.length; i++) {
@@ -78,7 +70,7 @@ function redesenhar() {
         context.beginPath();
         context.moveTo(startX, startY);
         context.lineTo(endX, endY);
-        context.strokeStyle = 'blue'; // cor da linha do desenho
+        context.strokeStyle = 'blue';
         context.lineWidth = 5;
         context.stroke();
     }
@@ -86,24 +78,16 @@ function redesenhar() {
         context.beginPath();
         context.moveTo(startX, startY);
         context.lineTo(endX, endY);
-        context.strokeStyle = 'blue'; // cor da linha do desenho
+        context.strokeStyle = 'blue';
         context.lineWidth = 5;
         context.stroke();
     }
 }
 
-// função para dividir uma linha em segmentos com base no grid
 function dividirLinhaEmSegmentos(startX, startY, endX, endY) {
-    /* essa função pega as coordenadas de início e fim de uma linha 
-    e divide em segmentos menores. primeiro, ela calcula a diferença entre as coordenadas 
-    de início e fim, determina quantos segmentos criar com base no tamanho do grid, 
-    e depois, gera um array de pontos que representam as coordenadas de cada segmento 
-    ao longo da linha, facilitando a manipulação e o desenho dos segmentos no canvas.*/
     const segmentos = [];
-
     const deltaX = endX - startX;
     const deltaY = endY - startY;
-
     const steps = Math.max(Math.abs(deltaX), Math.abs(deltaY)) / (tamanhoPadrao / 2);
 
     for (let i = 0; i <= steps; i++) {
@@ -114,6 +98,11 @@ function dividirLinhaEmSegmentos(startX, startY, endX, endY) {
 
     return segmentos;
 }
+
+canvas.addEventListener('mousedown', comecarDesenho);
+canvas.addEventListener('mousemove', desenhar);
+canvas.addEventListener('mouseup', pararDesenho);
+canvas.addEventListener('mouseleave', () => isDrawing = false);
 
 // função para verificar sobreposição de segmentos
 function verificarSobreposicao(startX, startY, endX, endY) {
@@ -666,43 +655,36 @@ function carregarProjetoDoArquivo(event) {
 function abrirSeletorArquivo() {
     document.getElementById('carregarArquivoInput').click();
 }
-
 async function salvarProjeto() {
-    //~ CAPTURA DOS DADOS
     const alturaParede = document.getElementById('alturaParede').value;
     const tipoBloco = document.getElementById('tipoBloco').value;
     const nomeProjetoInput = document.getElementById('nomeProjeto').value;
 
-    // coletar dados das portas e janelas
     const portasJanelas = [];
     const campos = document.querySelectorAll("#dimensions-container .field-group");
     campos.forEach(campo => {
         const largura = campo.querySelector("input[name='largura[]']").value;
         const altura = campo.querySelector("input[name='altura[]']").value;
         const quantidade = campo.querySelector("input[name='quantidade[]']").value;
-
         portasJanelas.push({ largura, altura, quantidade });
     });
 
-    //* ERROS
     if (alturaParede == 0 || alturaParede == null) {
         Swal.fire({
             title: 'Erro',
             text: 'A altura da parede não pode ser 0 ou nula',
             icon: 'error',
-        })
+        });
         return;
     }
     if (stack.length == 0 || stack.length == null) {
         Swal.fire({
             title: 'Erro',
-            text: 'É necessário desenhar o projeto para salva-lo',
+            text: 'É necessário desenhar o projeto para salvá-lo',
             icon: 'error',
-        })
+        });
         return;
     }
-
-    // Verifica se o nome do projeto foi informado
     if (!nomeProjetoInput) {
         Swal.fire({
             title: 'Erro',
@@ -711,50 +693,51 @@ async function salvarProjeto() {
         });
         return;
     }
-    //* ERROS TERMINA AQIO
 
     try {
-        //* ENVIO DOS DADOS (nome + dados)
         const dados = {
             alturaParede: alturaParede,
             tipoBloco: tipoBloco,
-            stack: stack, // salva as coordenadas do desenho
-            portasJanelas: portasJanelas 
+            stack: stack,
+            portasJanelas: portasJanelas
         };
 
         const formData = new FormData();
         formData.append('dados', JSON.stringify(dados));
-        formData.append('nome', nomeProjetoInput)
+        formData.append('nome', nomeProjetoInput);
 
         console.log('Enviando para o PHP:', dados);
 
-        // Envio dos dados
         const response = await fetch('http://localhost:8080/Constructo/conexao.php', {
             method: 'POST',
             body: formData
         });
 
-        if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
-        }
-
         const resultado = await response.json();
 
-        Swal.fire({
-            icon: 'success',
-            title: 'Sucesso!',
-            text: resultado.mensagem || 'Projeto salvo com sucesso',
-        });
+        if (resultado.erro) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: resultado.erro
+            });
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso!',
+                text: resultado.mensagem || 'Projeto salvo com sucesso',
+            });
+        }
+
     } catch (error) {
         console.error('Erro ao salvar:', error);
         Swal.fire({
             icon: 'error',
             title: 'Erro',
-            text: error.message || 'erro ao salvar',
+            text: error.message || 'Erro ao salvar',
         });
     }
 }
-
 
 // Função para chamar quando o ID do projeto é recuperado do localStorage
 const idProjeto = localStorage.getItem('idProjeto');
@@ -768,6 +751,13 @@ function carregarProjeto(idProjeto) {
     fetch(`http://localhost:8080/Constructo/conexao.php?id=${idProjeto}`)
         .then(response => response.json())
         .then(projeto => {
+            if (idProjeto == "novoProjeto") {
+                Swal.fire({
+                    title: "Vamos iniciar um novo projeto",
+                    icon: "info"
+                })
+                return;
+            }
             // veriifca se os dados do projeto estão corretos
             if (!projeto || !projeto.dados) {
                 console.error("Dados do projeto não encontrados ou inválidos.");
@@ -778,6 +768,7 @@ function carregarProjeto(idProjeto) {
                 });
                 return;
             }
+
 
             // tenta fazer o parse dos dados (dados é uma string jsonm)
             let dados;
@@ -806,7 +797,6 @@ function carregarProjeto(idProjeto) {
             const container = document.getElementById("dimensions-container");
             container.innerHTML = ""; // limpa os campos existentes
 
-            
             if (dados.portasJanelas && Array.isArray(dados.portasJanelas)) {
                 dados.portasJanelas.forEach(item => {
                     const fieldGroup = document.createElement("div");
