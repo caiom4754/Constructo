@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="../style.css?v4">
+    <title>Calculadora de Blocos</title>
+</head>
+
+<body>
+    <div class="row">
+        <article class="col-9">
+            <canvas id="canvas" width="960" height="520"></canvas>
+            <section class=" col-12">
+                <input type="text" id="nomeProjeto" placeholder="Nome do Projeto">
+                <button id="undoButton" class="fas fa-undo" data-toggle="tooltip" title="Desfazer/Apagar"></button>
+                <button id="salvarProjeto" class="fas fa-save" data-toggle="tooltip" title="Salvar projeto na núvem"></button>
+                <button id="baixarProjetoButton" class="fas fa-download" data-toggle="tooltip" title="Baixar projeto no computador"></button>
+                <button id="carregarArquivoButton" class="fas fa-upload" data-toggle="tooltip" title="Carregar um projeto do computador"></button>
+                <button id="voltarHome" class="fas fa-home" onclick="window.location.href='index.html'" data-toggle="tooltip" title="Ir para pagina inicial"></button>
+                <button id="calculadora" class="fas fa-calculator" onclick="window.location.href='index.html'" data-toggle="tooltip" title="Ir para calculadora"></button>
+                <button id="informacoes" class="fas fa-info-circle"
+                    onclick="window.location.href='index.html'" data-toggle="tooltip" title="Ir para página de informações"></button>
+                <input type="file" id="carregarArquivoInput" style="display:none;" >
+            </section>
+        </article>
+
+        <aside class="col-2">
+            <label for="tipoBloco">Tipo de Bloco:</label>
+            <select id="tipoBloco">
+                <option value="concreto34x19x14">Concreto 34 x 19 x 14</option>
+                <option value="ceramico19x19x09">Cerâmico 19 x 19 x 09</option>
+                <option value="ecologico25x12.5x6.25">Ecológico 25 x 12.5 x 6.25</option>
+            </select>
+            <br>
+            <label for="alturaParede">Altura da Parede (m):</label>
+            <input type="number" id="alturaParede" min="0.0" step="0.5">
+            <br>
+            <div id="resultadosMateriais" class="resultadosMateriais">
+                Materiais necessários:
+                <ul>
+                    <li>Blocos: 0</li>
+                    <li>Cimento: 0 sacos (50kg)</li>
+                    <li>Areia: 0 m³</li>
+                    <li>Água: 0 litros</li>
+                </ul>
+            </div>
+            <p class="portas_janelas">Dimensões de Portas e Janelas</p>
+            <button onclick="DimensaoPortasJanelas()">+ Adicionar Porta/Janela</button>
+            <br>
+            <br>
+            <div id="dimensions-container">
+            </div>
+            <br>
+            <button id="calcularButton">Calcular</button>
+
+            <div class="row guia">
+                <canvas id="guia-medida"></canvas>
+                <p>= 1m²</p>
+            </div>
+        </aside>
+    </div>
+
+    <script src="../js/script.js"></script>
+
+</body>
+
+</html>
