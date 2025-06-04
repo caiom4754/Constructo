@@ -138,7 +138,7 @@ header {
 
 
 nav {
-    background-image: url('img/nav.jpg');
+    background-image: url('/img/nav.jpg');
     background-repeat: repeat;
     background-size: 30vw 30vh;
     height: 15vh;
