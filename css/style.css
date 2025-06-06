@@ -12,7 +12,7 @@ body {
 }
 
 canvas {
-    border: solid 2px rgb(0, 0, 0);
+    border: solid 1px rgb(0, 0, 0);
     background-color: white;
     margin-top: 1.5em;
     margin-left: 1.5em;
@@ -34,8 +34,8 @@ canvas {
     margin-left: -5.5em;
 }
 header {
-    border: 2px solid #E67E22;
-    /* Laranja semelhante ao da logo */
+    border: 1px solid #E67E22;
+
 }
 
 #projetos-container {
@@ -74,7 +74,7 @@ header {
     height: 5em;
     background-color: #ff5e00;
     border-radius: 10px;
-    border: 2px solid #E67E22;
+    border: 1px solid #ff6600;
     position: relative;
     overflow: hidden;
     margin-bottom: 0.25rem !important;
@@ -142,7 +142,7 @@ nav {
     background-repeat: repeat;
     background-size: 30vw 30vh;
     height: 15vh;
-    border: rgb(255, 102, 0);
+    /* border: rgb(255, 102, 0); */
     display: flex;
     justify-content: center;
     /* Centraliza horizontalmente */
@@ -171,7 +171,7 @@ select {
 
 button {
     background-color: rgb(255, 102, 0);
-    border: solid 2px black;
+    border: solid 1px black;
 }
 
 button:hover {
@@ -186,6 +186,10 @@ section button {
     width: 10%;
     height: 3em;
     border-radius: 15px;
+}
+
+input, select{
+    border: 1px black solid
 }
 
 section input {
@@ -260,57 +264,20 @@ aside select {
 /* Estilos gerais do footer */
 footer {
     width: 100%;
-    background-color: #0f0d0d;
-    padding: 20px 0;
-    border: 2px solid #E67E22;
-}
+    height: 10em;
 
-/* Divisão do footer superior e inferior */
-.footer-top,
-.footer-bottom {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 20px;
-}
-
-/* Cada item dentro do footer */
-.footer-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 900px;
-    /* Limita a largura máxima */
-}
-
-/* Estilização do ícone da calculadora */
-footer .fas.fa-calculator {
-    font-size: 30px;
-    color: #ff6600;
-    /* Laranja */
-}
-
-/* Estilização do texto */
-.footer-item p {
+    bottom: 0;
+    position: absolute;
+    padding: 0;
+    padding-top: 6em;
     text-align: center;
-    font-size: 16px;
-    color: #ffffff;
-    margin: 0 10px;
-    /* Espaçamento entre ícone e texto */
-    flex: 1;
-    /* Faz o texto ocupar o espaço restante */
-}
 
-/* Estilização da seta */
-footer .fas.fa-arrow-right {
-    font-size: 30px;
-    color: #ff6600;
-}
+    background: linear-gradient(to bottom, 
+     rgba(15, 13, 13, 0) 0%,
+     #000000 100%);
+    color: #888;
 
-footer .fas.fa-info-circle {
-    font-size: 30px;
-    color: #ff6600;
+    font-size: x-small;
 }
 
 /* Ajustes responsivos */

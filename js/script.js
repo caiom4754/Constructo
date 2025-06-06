@@ -7,7 +7,7 @@ let endX = 0;
 let endY = 0;
 let stack = [];
 let tamanhoPadrao = 40;
-$(document).ready(function(){
+$(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
 });
 
@@ -361,49 +361,45 @@ function calcularMateriais(alturaParede, areaParede) {
     areia e a quantidade de água em litros, e retorna esses valores formatados
     se o cálculo de blocos falhar, retorna zero para todos os materiais*/
 
+    if (isNaN(alturaParede) || alturaParede <= 0) {
+        return { erro: 'Altura da parede inválida (NBR 12118: deve ser > 0)' };
+    }
+
     const tipoBloco = document.getElementById('tipoBloco').value;
-
-    // Chamando a função calcularNumeroBlocos e armazenando o resultado
     const numBlocos = calcularNumeroBlocos(alturaParede);
-
-    if (!numBlocos) {
-        return { cimento: 0, areia: 0, agua: 0 }; // Retorna 0 caso o cálculo de blocos falhe
+    
+    if (!numBlocos || numBlocos <= 0) {
+        return { erro: 'Cálculo de blocos inválido' };
     }
 
-    let blocosPorSaco;
+     // Parâmetros por tipo de bloco (NBR 15270 para cerâmico)
+    const PARAMETROS = {
+        'concreto34x19x14': {
+            consumoArgamassa: 0.0012, // 1.2L/bloco (junta de 10mm)
+            traco: { cimento: 1, areia: 4 },
+            relacaoAC: 0.5 // 0.5L/kg de cimento
+        },
+        'ceramico19x19x09': {
+            consumoArgamassa: 0.0015, // 1.5L/bloco (junta de 12mm - NBR 15270)
+            traco: { cimento: 1, areia: 5 }, // Traço 1:5 (argamassa mais magra)
+            relacaoAC: 0.8 // 0.8L/kg (bloco cerâmico absorve mais água)
+        },
+        'ecologico25x12.5x6.25': {
+            consumoArgamassa: 0.0009, // 0.9L/bloco (junta de 8mm)
+            traco: { cimento: 1, areia: 4 },
+            relacaoAC: 0.6 // 0.6L/kg
+        }
+    };
 
-    switch (tipoBloco) {
-        case 'concreto34x19x14':
-            blocosPorSaco = 150; // 1 saco de cimento para 150 blocos de concreto
-            areiaPorBloco = 0.020;
-            break;
-        case 'ceramico19x19x09':
-            blocosPorSaco = 200;
-            areiaPorBloco = 0.015;
-            break;
-        case 'ecologico25x12.5x6.25':
-            blocosPorSaco = 250;
-            areiaPorBloco = 0.012;
-            break;
-        default:
-            return { cimento: 0, areia: 0 };
-    }
+    const params = PARAMETROS[tipoBloco];
+    const volumeArgamassa = numBlocos * params.consumoArgamassa;
+    const volumeCimento = volumeArgamassa / (params.traco.cimento + params.traco.areia);
 
-    // Calculando o número de sacos de cimento
-    const sacosCimento = (numBlocos / blocosPorSaco);
-
-    // Calculando a quantidade de areia
-    const areiaPorM3 = areaParede * areiaPorBloco;
-
-    //calcular a quantidade de awa
-    const aguaLitros = (sacosCimento * 50) * 0.5;
-
-    //heheboy tudp funfando
-
+    // Resultados com margem de 10%
     return {
-        cimento: sacosCimento.toFixed(2),
-        areia: areiaPorM3.toFixed(2),
-        agua: aguaLitros.toFixed(1)
+        cimento: (volumeCimento / 0.0357 * 1.1).toFixed(2), // Sacos de 50kg
+        areia: (volumeArgamassa * (params.traco.areia / (params.traco.cimento + params.traco.areia)) * 1.1).toFixed(3),
+        agua: (volumeCimento * 1400 * params.relacaoAC * 1.1).toFixed(1)
     };
 }
 
@@ -656,11 +652,22 @@ function carregarProjetoDoArquivo(event) {
 function abrirSeletorArquivo() {
     document.getElementById('carregarArquivoInput').click();
 }
+
+// Função para chamar quando o ID do projeto é recuperado do localStorage
+const idProjeto = localStorage.getItem('idProjeto');
+if (idProjeto) {
+    carregarProjeto(idProjeto);
+} else {
+    console.error('ID do projeto não encontrado no localStorage.');
+}
+
 async function salvarProjeto() {
+    // Coleta os dados do formulário
     const alturaParede = document.getElementById('alturaParede').value;
     const tipoBloco = document.getElementById('tipoBloco').value;
     const nomeProjetoInput = document.getElementById('nomeProjeto').value;
 
+    // Coleta dados de portas e janelas
     const portasJanelas = [];
     const campos = document.querySelectorAll("#dimensions-container .field-group");
     campos.forEach(campo => {
@@ -670,6 +677,7 @@ async function salvarProjeto() {
         portasJanelas.push({ largura, altura, quantidade });
     });
 
+    // Validações básicas
     if (alturaParede == 0 || alturaParede == null) {
         Swal.fire({
             title: 'Erro',
@@ -678,6 +686,7 @@ async function salvarProjeto() {
         });
         return;
     }
+    
     if (stack.length == 0 || stack.length == null) {
         Swal.fire({
             title: 'Erro',
@@ -686,6 +695,7 @@ async function salvarProjeto() {
         });
         return;
     }
+    
     if (!nomeProjetoInput) {
         Swal.fire({
             title: 'Erro',
@@ -694,8 +704,17 @@ async function salvarProjeto() {
         });
         return;
     }
+    if (nomeProjetoInput == 'casa1' || nomeProjetoInput == 'casa2' || nomeProjetoInput == 'casa3') {
+        Swal.fire({
+            title: 'Atenção',
+            html: 'Não é possível utilizar este nome, por favor,<br><b>ESCOLHA OUTRO NOME</b>',
+            icon: 'warning',
+        });
+        return;
+    }
 
     try {
+        // Preparar dados para envio
         const dados = {
             alturaParede: alturaParede,
             tipoBloco: tipoBloco,
@@ -703,31 +722,64 @@ async function salvarProjeto() {
             portasJanelas: portasJanelas
         };
 
-        const formData = new FormData();
-        formData.append('dados', JSON.stringify(dados));
-        formData.append('nome', nomeProjetoInput);
+        // Verificação inicial (antes de mostrar confirmação)
+        const formDataVerificacao = new FormData();
+        formDataVerificacao.append('nome', nomeProjetoInput);
+        formDataVerificacao.append('dados', JSON.stringify(dados));
+        formDataVerificacao.append('acao', 'verificar');
 
-        console.log('Enviando para o PHP:', dados);
-
-        const response = await fetch('http://localhost:8080/Constructo/php/conexao.php', {
+        const responseVerificacao = await fetch('http://localhost:8080/Constructo/php/conexao.php', {
             method: 'POST',
-            body: formData
+            body: formDataVerificacao
         });
 
-        const resultado = await response.json();
+        const resultadoVerificacao = await responseVerificacao.json();
 
-        if (resultado.erro) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: resultado.erro
+        if (resultadoVerificacao.status === 'confirmacao') {
+            // Se precisa de confirmação, mostra o diálogo
+            const { isConfirmed } = await Swal.fire({
+                title: 'Projeto Existente',
+                text: 'Já existe um projeto com este nome. Deseja sobrescrever?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sim, sobrescrever',
+                cancelButtonText: 'Cancelar'
             });
-        } else {
+
+            if (!isConfirmed) {
+                Swal.fire('Operação cancelada', 'O projeto não foi alterado', 'info');
+                return;
+            }
+        } else if (resultadoVerificacao.status === 'erro') {
+            throw new Error(resultadoVerificacao.mensagem);
+        }
+
+        // Envio final (com ou sem sobrescrita)
+        const formDataFinal = new FormData();
+        formDataFinal.append('nome', nomeProjetoInput);
+        formDataFinal.append('dados', JSON.stringify(dados));
+        formDataFinal.append('acao', 'confirmar');
+
+        const responseFinal = await fetch('http://localhost:8080/Constructo/php/conexao.php', {
+            method: 'POST',
+            body: formDataFinal
+        });
+
+        const resultadoFinal = await responseFinal.json();
+
+        if (resultadoFinal.status === 'sucesso') {
             Swal.fire({
                 icon: 'success',
                 title: 'Sucesso!',
-                text: resultado.mensagem || 'Projeto salvo com sucesso',
+                text: resultadoFinal.mensagem || 'Projeto salvo com sucesso',
             });
+            
+            // Atualiza o ID no localStorage se for um novo projeto
+            if (resultadoFinal.novoId) {
+                localStorage.setItem('projetoId', resultadoFinal.novoId);
+            }
+        } else {
+            throw new Error(resultadoFinal.mensagem || 'Erro ao salvar projeto');
         }
 
     } catch (error) {
@@ -735,17 +787,9 @@ async function salvarProjeto() {
         Swal.fire({
             icon: 'error',
             title: 'Erro',
-            text: error.message || 'Erro ao salvar',
+            text: error.message || 'Erro ao salvar o projeto',
         });
     }
-}
-
-// Função para chamar quando o ID do projeto é recuperado do localStorage
-const idProjeto = localStorage.getItem('idProjeto');
-if (idProjeto) {
-    carregarProjeto(idProjeto);
-} else {
-    console.error('ID do projeto não encontrado no localStorage.');
 }
 
 function carregarProjeto(idProjeto) {

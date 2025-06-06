@@ -37,53 +37,63 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     exit;
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Recepção dos dados
-    $nome = (isset($_POST['nome'])) ? $_POST['nome'] : '';
-    $dados = (isset($_POST['dados'])) ? $_POST['dados'] : '';
+    $nome = $_POST['nome'] ?? '';
+    $dados = $_POST['dados'] ?? '';
+    $acao = $_POST['acao'] ?? 'verificar'; // Novo campo para controle do fluxo
 
     $dados = trim($dados, '"');
     $data = json_decode($dados, true);
     $datajson = json_encode($data);
 
+    // Verificação do JSON
+    if (json_last_error() != JSON_ERROR_NONE) {
+        echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao decodificar JSON']);
+        http_response_code(400);
+        exit;
+    }
+
+    // Verificação do nome
+    if (empty($nome)) {
+        echo json_encode(['status' => 'erro', 'mensagem' => 'Nome não informado']);
+        http_response_code(400);
+        exit;
+    }
+
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM projetos WHERE nome = ?");
     $stmt->execute([$nome]);
-    if ($stmt->fetchColumn() > 0) {
-        echo json_encode(["erro" => "Já existe um projeto com esse nome"]);
+    $projetoExiste = $stmt->fetchColumn() > 0;
+
+    if ($projetoExiste && $acao === 'verificar') {
+        echo json_encode([
+            'status' => 'confirmacao',
+            'mensagem' => 'Já existe um projeto com esse nome. Deseja sobrescrever?'
+        ]);
         exit;
     }
 
-
-    // Verifica se o JSON foi decodificado corretamente
-    if (json_last_error() != JSON_ERROR_NONE) {
-        echo json_encode(['mensagem' => 'Erro ao decodificar JSON']);
-        http_response_code(400); // Bad Request
-        exit;
-    }
-
-    // Verifica se o nome foi fornecido
-    if (!empty($nome)) {
-        $sql = 'INSERT INTO projetos (nome, dados) VALUES (:nome, :dados)';
-        $stm = $pdo->prepare($sql);
-        $stm->bindParam(':nome', $nome);
-        $stm->bindParam(':dados', $datajson);
-        $stm->execute();
-
-        if ($stm) {
-            echo json_encode(['mensagem' => 'Projeto registrado com sucesso']);
-            http_response_code(201); // Sucesso na criação
-            exit;
+    try {
+        if ($projetoExiste) {
+            // UPDATE
+            $sql = 'UPDATE projetos SET dados = ? WHERE nome = ?';
+            $stm = $pdo->prepare($sql);
+            $stm->execute([$datajson, $nome]);
+            $mensagem = 'Projeto salvo com sucesso!';
         } else {
-            echo json_encode(['mensagem' => 'Erro ao registrar projeto']);
-            http_response_code(500); // Erro no servidor
-            exit;
+            // INSERT
+            $sql = 'INSERT INTO projetos (nome, dados) VALUES (?, ?)';
+            $stm = $pdo->prepare($sql);
+            $stm->execute([$nome, $datajson]);
+            $mensagem = 'Projeto registrado com sucesso!';
         }
-    } else {
-        echo json_encode(['mensagem' => 'Nome não informado']);
-        http_response_code(400); // Bad Request
-        exit;
+
+        echo json_encode(['status' => 'sucesso', 'mensagem' => $mensagem]);
+        http_response_code($projetoExiste ? 200 : 201);
+        
+    } catch (PDOException $e) {
+        echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao salvar projeto: ' . $e->getMessage()]);
+        http_response_code(500);
     }
+    exit;
 }
-
-

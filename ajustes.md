@@ -1,5 +1,0 @@
-- Renomear o ccoisas
-- mover o index.html para a raiz
-- mover o css para um /css
-- mover SQL + Docuemntação para o "coisas"
-- eu preciso de um INSERT pra poder ver funcioando?
