@@ -704,14 +704,14 @@ async function salvarProjeto() {
         });
         return;
     }
-    // if (nomeProjetoInput == 'casa1' || nomeProjetoInput == 'casa2' || nomeProjetoInput == 'casa3') {
-    //     Swal.fire({
-    //         title: 'Atenção',
-    //         html: 'Não é possível utilizar este nome, por favor,<br><b>ESCOLHA OUTRO NOME</b>',
-    //         icon: 'warning',
-    //     });
-    //     return;
-    // }
+    if (nomeProjetoInput == 'casa1' || nomeProjetoInput == 'casa2' || nomeProjetoInput == 'casa3') {
+        Swal.fire({
+            title: 'Atenção',
+            html: 'Não é possível utilizar este nome, por favor,<br><b>ESCOLHA OUTRO NOME</b>',
+            icon: 'warning',
+        });
+        return;
+    }
 
     try {
         // Preparar dados para envio

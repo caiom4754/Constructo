@@ -19,32 +19,39 @@
 </head>
 
 <body>
-    <header>
-        <nav
-            class="nav-bg navbar navbar-expand-lg navbar-dark bg-dark d-flex justify-content-center align-items-center">
-            <img src="../img/logo_melhorada.png" alt="Logo" class="img-fluid">
-        </nav>
+   <header>
+        <a href="../index.html">
+            <img src="../img/logo_melhorada.png" alt="Logo" class="img-fluid" style="max-height: 80px" />
+        </a>
     </header>
+        <nav class="row justify-content-center position-absolute start-0 end-0 mx-auto"
+        style="width: 90%; max-width: 9.6em;">
+        <a href="../index.html"
+            class="d-flex justify-content-center col-5 col-md-3 mx-2 text-decoration-none">
+            <section class="p-3 rounded-bottom text-center card-nav">
+                <i class="fas fa-home fa-lg" style="color: #E67E22"></i>
+                <span class="d-block mt-1"></span>
+            </section>
+        </a>
+        <a href="../html/calculadora.html" class="d-flex justify-content-center col-5 col-md-3 mx-2 text-decoration-none">
+            <section class="p-3 rounded-bottom text-center card-nav">
+                <i class="fas fa-calculator fa-lg" style="color: #E67E22"></i>
+                <span class="d-block mt-1" style="color: #E67E22"></span>
+            </section>
+        </a>
+    </nav>
+
 
     <!-- Footer -->
-    <footer class="mt-5">
-        <div class="footer-top">
-            <div class="footer-item">
-                <i class="fas fa-calculator"></i>
-                <p>Calcule a quantidade de materiais necessários utilizando as medidas da sua construção</p>
-                <a href="./calculadora.html"><i class="fas fa-arrow-right"></i></a>
-            </div>
+    <footer class="mt-5" style="display: flex;">
+        <div class="col-3"></div>
+        <div class="col-3">
+            <p>Faculdade de Tecnologia de São Roque - Fatec-SR <br>2024 - 2025</p>
         </div>
-
-        <hr class="linha-separadora">
-
-        <div class="footer-bottom">
-            <div class="footer-item">
-                <i class="fas fa-info-circle"></i>
-                <p>Calcule a quantidade de materiais necessários utilizando as medidas da sua construção</p>
-                <a href="./info.html"><i class="fas fa-arrow-right"></i></a>
-            </div>
+        <div class="col-3">
+            <p>Desenvolvedores: Caio Martins & Vinicius Venâncio <br>Orientador: Professor Rubens Menezes</p>
         </div>
+        <div class="col-3"></div>
     </footer>
 
     <!-- Scripts -->
