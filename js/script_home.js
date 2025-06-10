@@ -77,19 +77,19 @@ document.addEventListener("DOMContentLoaded", () => {
     // evento só para o "novo projeto"
     projetoPronto1.addEventListener("click", () => {
         localStorage.setItem("idProjeto", "1");
-        window.location.href = "../html/teste.html";
+        window.location.href = "html/teste.html";
     });
     projetoPronto2.addEventListener("click", () => {
         localStorage.setItem("idProjeto", "2");
-        window.location.href = "../html/teste.html";
+        window.location.href = "html/teste.html";
     });
     projetoPronto3.addEventListener("click", () => {
         localStorage.setItem("idProjeto", "3");
-        window.location.href = "../html/teste.html";
+        window.location.href = "html/teste.html";
     });
     novoProjeto.addEventListener("click", () => {
         localStorage.setItem("idProjeto", "novoProjeto");
-        window.location.href = "../html/teste.html";
+        window.location.href = "html/teste.html";
     });
 
     projetosProntos.append(novoProjeto, projetoPronto1, projetoPronto2, projetoPronto3);
@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const id = this.dataset.id;
                     if (id) {
                         localStorage.setItem("idProjeto", id);
-                        window.location.href = "../html/teste.html";
+                        window.location.href = "html/teste.html";
                     }
                 });
 

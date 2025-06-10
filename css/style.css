@@ -30,12 +30,8 @@ canvas {
     margin-top: 1em;
 }
 
-.guia p{
+.guia p {
     margin-left: -5.5em;
-}
-header {
-    border: 1px solid #E67E22;
-
 }
 
 #projetos-container {
@@ -137,7 +133,7 @@ header {
 }
 
 
-nav {
+header {
     background-image: url('/img/nav.jpg');
     background-repeat: repeat;
     background-size: 30vw 30vh;
@@ -148,9 +144,10 @@ nav {
     /* Centraliza horizontalmente */
     align-items: center;
     /* Centraliza verticalmente */
+    border: 1px solid #E67E22;
 }
 
-nav img {
+header img {
     width: 20vw;
     height: 10vh;
     display: block;
@@ -163,6 +160,14 @@ nav img {
 
 }
 
+.card-nav {
+    border: 1px solid #E67E22;
+    color: #E67E22;
+    background-color: #131313;
+    height: 3em;
+    width: 5em;
+}
+
 input,
 select {
     text-align: center;
@@ -170,12 +175,14 @@ select {
 }
 
 button {
-    background-color: rgb(255, 102, 0);
-    border: solid 1px black;
+    background-color: rgba(255, 102, 0, 0);
+    border: solid 1px #ff6600;
+    color: #ff6600;
+    border-radius: 10px;
 }
 
 button:hover {
-    background-color: rgb(255, 153, 0);
+    background-color: rgb(8, 0, 77);
 }
 
 section {
@@ -188,7 +195,8 @@ section button {
     border-radius: 15px;
 }
 
-input, select{
+input,
+select {
     border: 1px black solid
 }
 
@@ -212,7 +220,7 @@ aside select {
 }
 
 .portas_janelas {
-    font-size: 1.4em;
+    font-size: 1em;
     text-align: center;
 }
 
@@ -221,15 +229,22 @@ aside select {
 }
 
 .resultadoMateriais {
-    width: 5%;
-    height: 10%;
+    color: #000000;
+    width: 10em;
+}
+
+#dimensions-container-calculadora {
+    max-height: 10.3em;
+    overflow-y: auto;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 #dimensions-container {
-    max-height: 200px;
-    /* Define a altura máxima do container */
+    max-height: 8.5em;
     overflow-y: auto;
-    /* Habilita a barra de rolagem vertical */
     width: 100%;
     padding: 5px;
     border: 1px solid #ccc;
@@ -250,8 +265,9 @@ aside select {
 .field-group button {
     width: 15%;
     height: 15%;
-    background-color: rgb(255, 102, 0);
-    color: black;
+    background-color: rgba(255, 102, 0, 0);
+    color: rgb(255, 102, 0);
+    border: 1px solid rgb(255, 102, 0);
     border-radius: 5px;
     cursor: pointer;
 }
@@ -272,9 +288,9 @@ footer {
     padding-top: 6em;
     text-align: center;
 
-    background: linear-gradient(to bottom, 
-     rgba(15, 13, 13, 0) 0%,
-     #000000 100%);
+    background: linear-gradient(to bottom,
+            rgba(15, 13, 13, 0) 0%,
+            #000000 100%);
     color: #888;
 
     font-size: x-small;
@@ -296,14 +312,28 @@ footer {
 
 
 #calcularButton {
-    color: aliceblue;
-    background-color: #4d32e6;
+    border: solid 1px #4d32e6;
+    color: #856fff;
+    background-color: #4d32e600;
 }
 
 #calcularButton:hover {
-    background-color: #8772ff;
+    background-color: rgb(8, 0, 77);
 }
 
 .article-figure-card {
     margin: 1em;
+}
+
+/* *Page calc*/
+
+.btn-calc-page {
+    width: 7em;
+    border-radius: 6px;
+    text-align: center;
+
+}
+
+.resultadoMateriais_cal {
+    text-align: center;
 }

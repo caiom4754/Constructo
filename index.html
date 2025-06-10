@@ -17,38 +17,53 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <!-- Estilo personalizado -->
-    <link rel="stylesheet" href="../css/style.css?v=4">
+    <link rel="stylesheet" href="css/style.css?v=4">
+
+
 
 </head>
 
 <body>
     <!-- Header -->
     <header>
-        <nav
-            class="nav-bg navbar navbar-expand-lg navbar-dark bg-dark d-flex justify-content-center align-items-center">
-            <img src="/img/logo_melhorada.png" alt="Logo" class="img-fluid">
-        </nav>
+        <img src="img/logo_melhorada.png" alt="Logo" class="img-fluid">
     </header>
+    <nav class="row justify-content-center position-absolute start-0 end-0 mx-auto"
+        style="width: 90%; max-width: 9.6em;">
+        <a href="../html/calculadora.html"
+            class="d-flex justify-content-center col-5 col-md-3 mx-2 text-decoration-none">
+            <section class="p-3 rounded-bottom text-center card-nav">
+                <i class="fas fa-calculator fa-lg" style="color: #E67E22"></i>
+                <span class="d-block mt-1"></span>
+            </section>
+        </a>
+        <a href="../html/teste.html" class="d-flex justify-content-center col-5 col-md-3 mx-2 text-decoration-none">
+            <section class="p-3 rounded-bottom text-center card-nav">
+                <i class="fas fa-info-circle fa-lg" style="color: #E67E22"></i>
+                <span class="d-block mt-1" style="color: #E67E22"></span>
+            </section>
+        </a>
+    </nav>
     <div class="body-home">
         <!-- Corpo -->
         <main class="container mt-4">
             <section class="section-home">
-                <h4 class="text-uppercase">Projetos Salvos</h4>
+                <h4 class="text-uppercase" style="margin-top: 1.5em">Projetos Salvos</h4>
                 <div id="projetos-container" class="row md-4 "></div>
                 <br>
                 <br>
-                <h4 class="text-uppercase">Projetos Prontos</h4>
+                <h4 class="text-uppercase" style="margin-top: -1.5em;">Projetos Prontos</h4>
                 <div id="projetosProntos" class="row mb-4"></div>
             </section>
         </main>
     </div>
 
     <!-- Footer -->
-    <footer class="mt-5"  style="display: flex;">
+    <footer class="mt-5" style="display: flex;">
         <div class="col-3"></div>
         <div class="col-3">
             <p>Faculdade de Tecnologia de São Roque - Fatec-SR <br>2024 - 2025</p>
-            </div>
+        </div>
         <div class="col-3">
             <p>Desenvolvedores: Caio Martins & Vinicius Venâncio <br>Orientador: Professor Rubens Menezes</p>
         </div>
@@ -61,7 +76,7 @@
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script src="../js/script_home.js"></script>
+    <script src="js/script_home.js"></script>
 
 
 </body>

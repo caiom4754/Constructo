@@ -349,7 +349,7 @@ function calcularNumeroBlocos(alturaParede) {
 }
 
 // Função para calcular materiais
-function calcularMateriais(alturaParede, areaParede) {
+function calcularMateriais(alturaParede) {
     /* a função calcula a quantidade necessária de materiais (cimento, areia e água) 
     para construir uma parede com base na altura e na área da parede. ela considera 
     a proporção padrão de 1:4:0.5 para cimento, areia e água
@@ -397,7 +397,7 @@ function calcularMateriais(alturaParede, areaParede) {
 
     // Resultados com margem de 10%
     return {
-        cimento: (volumeCimento / 0.0357 * 1.1).toFixed(2), // Sacos de 50kg
+        cimento: (volumeCimento / 0.0357 * 1.1).toFixed(1) , // Sacos de 50kg
         areia: (volumeArgamassa * (params.traco.areia / (params.traco.cimento + params.traco.areia)) * 1.1).toFixed(3),
         agua: (volumeCimento * 1400 * params.relacaoAC * 1.1).toFixed(1)
     };
@@ -704,14 +704,14 @@ async function salvarProjeto() {
         });
         return;
     }
-    if (nomeProjetoInput == 'casa1' || nomeProjetoInput == 'casa2' || nomeProjetoInput == 'casa3') {
-        Swal.fire({
-            title: 'Atenção',
-            html: 'Não é possível utilizar este nome, por favor,<br><b>ESCOLHA OUTRO NOME</b>',
-            icon: 'warning',
-        });
-        return;
-    }
+    // if (nomeProjetoInput == 'casa1' || nomeProjetoInput == 'casa2' || nomeProjetoInput == 'casa3') {
+    //     Swal.fire({
+    //         title: 'Atenção',
+    //         html: 'Não é possível utilizar este nome, por favor,<br><b>ESCOLHA OUTRO NOME</b>',
+    //         icon: 'warning',
+    //     });
+    //     return;
+    // }
 
     try {
         // Preparar dados para envio
