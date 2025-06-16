@@ -546,6 +546,14 @@ function baixarProjeto() {
         portasJanelas.push({ largura, altura, quantidade });
     });
 
+    if(nomeProjetoInput.length == 0){
+        Swal.fire({
+           title: 'Erro',
+            text: 'Nome do projeto não pode estar vazio',
+            icon: 'error',
+        })
+        return;
+    }
     if (alturaParede == 0 || alturaParede == null) {
         Swal.fire({
             title: 'Erro',
@@ -565,6 +573,7 @@ function baixarProjeto() {
 
     // adiciona ao objeto do projeto
     const dados = {
+        nome: nomeProjetoInput,
         alturaParede: alturaParede,
         tipoBloco: tipoBloco,
         stack: stack, // salva as coordenadas do desenho
@@ -587,6 +596,7 @@ function carregarProjetoDoArquivo(event) {
         const projeto = JSON.parse(e.target.result);
 
         // atualiza os campos de altura e tipo de bloco
+        document.getElementById('nomeProjeto').value = projeto.nome;
         document.getElementById('alturaParede').value = projeto.alturaParede;
         document.getElementById('tipoBloco').value = projeto.tipoBloco;
 

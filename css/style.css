@@ -161,7 +161,9 @@ header img {
 }
 
 .card-nav {
-    border: 1px solid #E67E22;
+    border-left: 1px solid #E67E22;
+    border-right: 1px solid #E67E22;
+    border-bottom: 1px solid #E67E22;
     color: #E67E22;
     background-color: #131313;
     height: 3em;
@@ -335,5 +337,12 @@ footer {
 }
 
 .resultadoMateriais_cal {
+    text-align: center;
+}
+
+
+/** Page infos*/
+.main-infos{
+    margin-top: 3em;
     text-align: center;
 }
