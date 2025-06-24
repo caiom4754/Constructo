@@ -40,8 +40,7 @@ function DimensaoPortasJanelas() {
     quantidadeInput.required = true;
 
     const removeButton = document.createElement("button");
-    removeButton.classList.add('btn-rmv-dmsPJ')
-    removeButton.innerText = "X";
+    removeButton.classList.add('fas', 'fa-trash-alt')
     removeButton.type = "button";
     removeButton.onclick = () => container.removeChild(fieldGroup);
 
